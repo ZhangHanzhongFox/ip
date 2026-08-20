@@ -16,16 +16,24 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
 1. After that, locate the `src/main/java/Fox.java` file, right-click it, and choose `Run Fox.main()` (if the code editor is showing compile errors, try restarting the IDE). If the setup is correct, you should see something like the below as the output:
    ```
     /\_/\
-   ( •ᴗ• )   Hi! I'm Fox 🦊
-    > ^ <    Your little study companion.
+   ( •ᴗ• )   Hi! I'm Fox, your little companion. 🦊
+    > ^ <    I may be small, but I've got plenty of tricks up my sleeve.
 
              What can I do for you?
 
-   ------------------------------------------------------------
-    /\_/\
-   ( -.- )   Bye for now! 🌙
-    > ^ <    Stay curious, keep learning, and see you soon!
-   ------------------------------------------------------------
+   ____________________________________________________________
+  list
+   ____________________________________________________________
+    list
+   ____________________________________________________________
+  blah
+   ____________________________________________________________
+    blah
+   ____________________________________________________________
+  bye
+   ____________________________________________________________
+    Bye. Hope to see you again soon!
+   ____________________________________________________________
    ```
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
