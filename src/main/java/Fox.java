@@ -1,6 +1,13 @@
 import java.util.Scanner;
 
 public class Fox {
+    private static final String HAPPY_EXPRESSION = "  /\\_/\\\n"
+            + " ( ^ᴗ^ )\n"
+            + "  > ^ <";
+    private static final String SAD_EXPRESSION = "  /\\_/\\\n"
+            + " ( •︵• )\n"
+            + "  > ^ <";
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
@@ -29,39 +36,42 @@ public class Fox {
             }
             String commandName = trimmedCommand.split("\\s+", 2)[0];
 
-            if (trimmedCommand.equalsIgnoreCase("bye")) {
-                System.out.println(separator);
-                System.out.print(farewell);
-                System.out.println(separator);
-                break;
-            } else if (trimmedCommand.equalsIgnoreCase("list")) {
-                System.out.println(separator);
-                System.out.println("     Here are the tasks in your list:");
-                for (int i = 0; i < taskCount; i++) {
-                    System.out.println("     " + (i + 1) + "." + tasks[i].toString());
-                }
-                System.out.println(separator);
-            } else if (commandName.equalsIgnoreCase("mark")) {
-                markTask(trimmedCommand, tasks, taskCount, separator);
-            } else if (commandName.equalsIgnoreCase("unmark")) {
-                unmarkTask(trimmedCommand, tasks, taskCount, separator);
-            } else {
-                if (taskCount == tasks.length) {
+            try {
+                if (trimmedCommand.equalsIgnoreCase("bye")) {
                     System.out.println(separator);
-                    System.out.println("     Your task list is full.");
+                    System.out.print(farewell);
                     System.out.println(separator);
-                    continue;
+                    break;
+                } else if (trimmedCommand.equalsIgnoreCase("list")) {
+                    System.out.println(separator);
+                    printHappyExpression();
+                    System.out.println("     Here are the tasks in your list:");
+                    for (int i = 0; i < taskCount; i++) {
+                        System.out.println("     " + (i + 1) + "." + tasks[i].toString());
+                    }
+                    System.out.println(separator);
+                } else if (commandName.equalsIgnoreCase("mark")) {
+                    markTask(trimmedCommand, tasks, taskCount, separator);
+                } else if (commandName.equalsIgnoreCase("unmark")) {
+                    unmarkTask(trimmedCommand, tasks, taskCount, separator);
+                } else {
+                    if (taskCount == tasks.length) {
+                        throw new FoxException("☹ OOPS!!! Your task list is full.");
+                    }
+                    Task task = parseTask(commandName, trimmedCommand);
+                    tasks[taskCount] = task;
+                    taskCount++;
+                    System.out.println(separator);
+                    printHappyExpression();
+                    System.out.println("     Got it. I've added this task:");
+                    System.out.println("       " + task.toString());
+                    System.out.println("     Now you have " + taskCount + " tasks in the list.");
+                    System.out.println(separator);
                 }
-                Task task = parseTask(commandName, trimmedCommand);
-                if (task == null) {
-                    continue;
-                }
-                tasks[taskCount] = task;
-                taskCount++;
+            } catch (FoxException exception) {
                 System.out.println(separator);
-                System.out.println("     Got it. I've added this task:");
-                System.out.println("       " + task.toString());
-                System.out.println("     Now you have " + taskCount + " tasks in the list.");
+                printSadExpression();
+                System.out.println("     " + exception.getMessage());
                 System.out.println(separator);
             }
         }
@@ -72,114 +82,120 @@ public class Fox {
      *
      * @param commandName the first word of the command
      * @param command the complete, trimmed command
-     * @return the created task, or {@code null} when the command is incomplete
+     * @return the created task
+     * @throws FoxException if the command has missing or invalid task details
      */
-    private static Task parseTask(String commandName, String command) {
+    private static Task parseTask(String commandName, String command) throws FoxException {
         String details = command.substring(commandName.length()).trim();
 
         if (commandName.equalsIgnoreCase("todo")) {
             if (details.isEmpty()) {
-                printTaskFormatError("todo <description>");
-                return null;
+                throw new FoxException("☹ OOPS!!! The description of a todo cannot be empty.");
             }
             return new Todo(details);
         }
 
         if (commandName.equalsIgnoreCase("deadline")) {
             String[] parts = details.split("\\s+/by\\s+", 2);
-            if (parts.length != 2 || parts[0].isBlank() || parts[1].isBlank()) {
-                printTaskFormatError("deadline <description> /by <time>");
-                return null;
+            if (details.isEmpty() || (parts.length == 2 && parts[0].isBlank())) {
+                throw new FoxException("☹ OOPS!!! The description of a deadline cannot be empty.");
+            }
+            if (parts.length != 2 || parts[1].isBlank()) {
+                throw new FoxException("☹ OOPS!!! The deadline time cannot be empty.");
             }
             return new Deadline(parts[0].trim(), parts[1].trim());
         }
 
         if (commandName.equalsIgnoreCase("event")) {
             String[] descriptionAndTimes = details.split("\\s+/from\\s+", 2);
-            if (descriptionAndTimes.length != 2 || descriptionAndTimes[0].isBlank()) {
-                printTaskFormatError("event <description> /from <start> /to <end>");
-                return null;
+            if (details.isEmpty() || (descriptionAndTimes.length == 2
+                    && descriptionAndTimes[0].isBlank())) {
+                throw new FoxException("☹ OOPS!!! The description of an event cannot be empty.");
+            }
+            if (descriptionAndTimes.length != 2 || descriptionAndTimes[1].isBlank()) {
+                throw new FoxException("☹ OOPS!!! The start time of an event cannot be empty.");
             }
 
             String[] times = descriptionAndTimes[1].split("\\s+/to\\s+", 2);
-            if (times.length != 2 || times[0].isBlank() || times[1].isBlank()) {
-                printTaskFormatError("event <description> /from <start> /to <end>");
-                return null;
+            if (times.length != 2 || times[0].isBlank()) {
+                throw new FoxException("☹ OOPS!!! The start time of an event cannot be empty.");
+            }
+            if (times[1].isBlank()) {
+                throw new FoxException("☹ OOPS!!! The end time of an event cannot be empty.");
             }
             return new Event(descriptionAndTimes[0].trim(), times[0].trim(), times[1].trim());
         }
 
-        return new Task(command);
-    }
-
-    /**
-     * Displays the required format for an incomplete task-creation command.
-     *
-     * @param format the expected command format
-     */
-    private static void printTaskFormatError(String format) {
-        System.out.println("     Use: " + format);
+        throw new FoxException("☹ OOPS!!! I'm sorry, but I don't know what that means :-(");
     }
 
     /**
      * Marks the task selected by a {@code mark <number>} command as done.
      */
-    private static void markTask(String command, Task[] tasks, int taskCount, String separator) {
+    private static void markTask(String command, Task[] tasks, int taskCount, String separator)
+            throws FoxException {
         String[] parts = command.split("\\s+");
         if (parts.length != 2) {
-            printTaskNumberError(separator);
-            return;
+            throw new FoxException("☹ OOPS!!! Please provide the task number to mark.");
         }
 
         try {
             int taskNumber = Integer.parseInt(parts[1]);
             int taskIndex = taskNumber - 1;
             if (taskIndex < 0 || taskIndex >= taskCount) {
-                printTaskNumberError(separator);
-                return;
+                throw new FoxException("☹ OOPS!!! I couldn't find that task.");
             }
 
             tasks[taskIndex].markAsDone();
             System.out.println(separator);
+            printHappyExpression();
             System.out.println("     Nice! I've marked this task as done:");
             System.out.println("       " + tasks[taskIndex]);
             System.out.println(separator);
         } catch (NumberFormatException exception) {
-            printTaskNumberError(separator);
+            throw new FoxException("☹ OOPS!!! The task number must be a whole number.");
         }
-    }
-
-    private static void printTaskNumberError(String separator) {
-        System.out.println(separator);
-        System.out.println("     I couldn't find that task.");
-        System.out.println(separator);
     }
 
     /**
      * Reverses the done status of the task selected by an {@code unmark <number>} command.
      */
-    private static void unmarkTask(String command, Task[] tasks, int taskCount, String separator) {
+    private static void unmarkTask(String command, Task[] tasks, int taskCount, String separator)
+            throws FoxException {
         String[] parts = command.split("\\s+");
         if (parts.length != 2) {
-            printTaskNumberError(separator);
-            return;
+            throw new FoxException("☹ OOPS!!! Please provide the task number to unmark.");
         }
 
         try {
             int taskNumber = Integer.parseInt(parts[1]);
             int taskIndex = taskNumber - 1;
             if (taskIndex < 0 || taskIndex >= taskCount) {
-                printTaskNumberError(separator);
-                return;
+                throw new FoxException("☹ OOPS!!! I couldn't find that task.");
             }
 
             tasks[taskIndex].markAsNotDone();
             System.out.println(separator);
+            printHappyExpression();
             System.out.println("     OK, I've marked this task as not done yet:");
             System.out.println("       " + tasks[taskIndex]);
             System.out.println(separator);
         } catch (NumberFormatException exception) {
-            printTaskNumberError(separator);
+            throw new FoxException(" OOPS!!! The task number must be a whole number.");
         }
+    }
+
+    /**
+     * Prints the expression used with successful task operations.
+     */
+    private static void printHappyExpression() {
+        System.out.println(HAPPY_EXPRESSION);
+    }
+
+    /**
+     * Prints the expression used when reporting a command error.
+     */
+    private static void printSadExpression() {
+        System.out.println(SAD_EXPRESSION);
     }
 }
