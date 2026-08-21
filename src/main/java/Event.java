@@ -1,0 +1,30 @@
+/**
+ * Represents a task that takes place at an event.
+ */
+public class Event extends Task {
+    private final String from;
+    private final String to;
+
+    /**
+     * Creates a new unfinished event task.
+     *
+     * @param description the task description
+     * @param from the event start time
+     * @param to the event end time
+     */
+    public Event(String description, String from, String to) {
+        super(description);
+        this.from = from;
+        this.to = to;
+    }
+
+    /**
+     * Returns this event task in its display format.
+     *
+     * @return the formatted event task
+     */
+    @Override
+    public String toString() {
+        return "[E]" + super.toString() + " (from: " + from + " to: " + to + ")";
+    }
+}

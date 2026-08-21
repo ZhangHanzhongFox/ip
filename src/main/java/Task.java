@@ -46,4 +46,14 @@ public class Task {
     public String getDescription() {
         return description;
     }
+
+    /**
+     * Returns this task's status and description for display.
+     *
+     * @return the formatted task details
+     */
+    @Override
+    public String toString() {
+        return "[" + getStatusIcon() + "] " + description;
+    }
 }
