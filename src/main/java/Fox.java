@@ -54,6 +54,8 @@ public class Fox {
                     markTask(trimmedCommand, tasks, taskCount, separator);
                 } else if (commandName.equalsIgnoreCase("unmark")) {
                     unmarkTask(trimmedCommand, tasks, taskCount, separator);
+                } else if (commandName.equalsIgnoreCase("delete")) {
+                    taskCount = deleteTask(trimmedCommand, tasks, taskCount, separator);
                 } else {
                     if (taskCount == tasks.length) {
                         throw new FoxException("☹ OOPS!!! Your task list is full.");
@@ -182,6 +184,48 @@ public class Fox {
             System.out.println(separator);
         } catch (NumberFormatException exception) {
             throw new FoxException(" OOPS!!! The task number must be a whole number.");
+        }
+    }
+
+    /**
+     * Removes the task selected by a {@code delete <number>} command.
+     *
+     * @param command the complete delete command
+     * @param tasks the task list
+     * @param taskCount the number of tasks currently in the list
+     * @param separator the line used to separate replies
+     * @return the number of tasks remaining after the deletion
+     * @throws FoxException if the command does not identify an existing task
+     */
+    private static int deleteTask(String command, Task[] tasks, int taskCount, String separator)
+            throws FoxException {
+        String[] parts = command.split("\\s+");
+        if (parts.length != 2) {
+            throw new FoxException("☹ OOPS!!! Please provide the task number to delete.");
+        }
+
+        try {
+            int taskNumber = Integer.parseInt(parts[1]);
+            int taskIndex = taskNumber - 1;
+            if (taskIndex < 0 || taskIndex >= taskCount) {
+                throw new FoxException("☹ OOPS!!! I couldn't find that task.");
+            }
+
+            Task deletedTask = tasks[taskIndex];
+            for (int i = taskIndex; i < taskCount - 1; i++) {
+                tasks[i] = tasks[i + 1];
+            }
+            tasks[taskCount - 1] = null;
+            int remainingTaskCount = taskCount - 1;
+
+            System.out.println(separator);
+            System.out.println("     Noted. I've removed this task:");
+            System.out.println("       " + deletedTask.toString());
+            System.out.println("     Now you have " + remainingTaskCount + " tasks in the list.");
+            System.out.println(separator);
+            return remainingTaskCount;
+        } catch (NumberFormatException exception) {
+            throw new FoxException("☹ OOPS!!! The task number must be a whole number.");
         }
     }
 
