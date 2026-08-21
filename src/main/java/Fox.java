@@ -4,8 +4,7 @@ public class Fox {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        String[] tasks = new String[100];
-        boolean[] taskStatus = new boolean[100];
+        Task[] tasks = new Task[100];
         int taskCount = 0;
         String separator = "    ____________________________________________________________";
 
@@ -36,14 +35,14 @@ public class Fox {
                 System.out.println(separator);
                 System.out.println("     Here are the tasks in your list:");
                 for (int i = 0; i < taskCount; i++) {
-                    String status = taskStatus[i] ? "X" : " ";
-                    System.out.println("     " + (i + 1) + ".[" + status + "] " + tasks[i]);
+                    System.out.println("     " + (i + 1) + ".[" + tasks[i].getStatusIcon()
+                            + "] " + tasks[i].getDescription());
                 }
                 System.out.println(separator);
             } else if (commandName.equalsIgnoreCase("mark")) {
-                markTask(trimmedCommand, tasks, taskStatus, taskCount, separator);
+                markTask(trimmedCommand, tasks, taskCount, separator);
             } else if (commandName.equalsIgnoreCase("unmark")) {
-                unmarkTask(trimmedCommand, tasks, taskStatus, taskCount, separator);
+                unmarkTask(trimmedCommand, tasks, taskCount, separator);
             } else {
                 if (trimmedCommand.isEmpty()) {
                     continue;
@@ -54,8 +53,7 @@ public class Fox {
                     System.out.println(separator);
                     continue;
                 }
-                tasks[taskCount] = command;
-                taskStatus[taskCount] = false;
+                tasks[taskCount] = new Task(command);
                 taskCount++;
                 System.out.println(separator);
                 System.out.println("     added: " + command);
@@ -67,8 +65,7 @@ public class Fox {
     /**
      * Marks the task selected by a {@code mark <number>} command as done.
      */
-    private static void markTask(String command, String[] tasks, boolean[] taskStatus,
-                                 int taskCount, String separator) {
+    private static void markTask(String command, Task[] tasks, int taskCount, String separator) {
         String[] parts = command.split("\\s+");
         if (parts.length != 2) {
             printTaskNumberError(separator);
@@ -83,10 +80,11 @@ public class Fox {
                 return;
             }
 
-            taskStatus[taskIndex] = true;
+            tasks[taskIndex].markAsDone();
             System.out.println(separator);
             System.out.println("     Nice! I've marked this task as done:");
-            System.out.println("       [X] " + tasks[taskIndex]);
+            System.out.println("       [" + tasks[taskIndex].getStatusIcon() + "] "
+                    + tasks[taskIndex].getDescription());
             System.out.println(separator);
         } catch (NumberFormatException exception) {
             printTaskNumberError(separator);
@@ -102,8 +100,7 @@ public class Fox {
     /**
      * Reverses the done status of the task selected by an {@code unmark <number>} command.
      */
-    private static void unmarkTask(String command, String[] tasks, boolean[] taskStatus,
-                                   int taskCount, String separator) {
+    private static void unmarkTask(String command, Task[] tasks, int taskCount, String separator) {
         String[] parts = command.split("\\s+");
         if (parts.length != 2) {
             printTaskNumberError(separator);
@@ -118,10 +115,11 @@ public class Fox {
                 return;
             }
 
-            taskStatus[taskIndex] = false;
+            tasks[taskIndex].markAsNotDone();
             System.out.println(separator);
             System.out.println("     OK, I've marked this task as not done yet:");
-            System.out.println("       [ ] " + tasks[taskIndex]);
+            System.out.println("       [" + tasks[taskIndex].getStatusIcon() + "] "
+                    + tasks[taskIndex].getDescription());
             System.out.println(separator);
         } catch (NumberFormatException exception) {
             printTaskNumberError(separator);
