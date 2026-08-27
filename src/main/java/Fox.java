@@ -1,6 +1,7 @@
 import java.util.Scanner;
 
 public class Fox {
+    private static final int MAX_TASKS = 100;
     private static final String HAPPY_EXPRESSION = "  /\\_/\\\n"
             + " ( ^ᴗ^ )\n"
             + "  > ^ <";
@@ -10,10 +11,25 @@ public class Fox {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        Storage storage = new Storage();
 
-        Task[] tasks = new Task[100];
+        Task[] tasks = new Task[MAX_TASKS];
         int taskCount = 0;
+        boolean storageUsable = true;
         String separator = "    ____________________________________________________________";
+
+        try {
+            Task[] loadedTasks = storage.load();
+            if (loadedTasks.length > MAX_TASKS) {
+                throw new Storage.StorageException("The data file contains more than "
+                        + MAX_TASKS + " tasks.");
+            }
+            System.arraycopy(loadedTasks, 0, tasks, 0, loadedTasks.length);
+            taskCount = loadedTasks.length;
+        } catch (Storage.StorageException exception) {
+            printStorageError(exception);
+            storageUsable = false;
+        }
 
         String greeting = "  /\\_/\\\n"
                 + " ( •ᴗ• )   Hi! I'm Fox, your little companion. 🦊\n"
@@ -38,6 +54,7 @@ public class Fox {
 
             try {
                 if (trimmedCommand.equalsIgnoreCase("bye")) {
+                    saveTasks(storage, tasks, taskCount, storageUsable);
                     System.out.println(separator);
                     System.out.print(farewell);
                     System.out.println(separator);
@@ -52,10 +69,13 @@ public class Fox {
                     System.out.println(separator);
                 } else if (commandName.equalsIgnoreCase("mark")) {
                     markTask(trimmedCommand, tasks, taskCount, separator);
+                    saveTasks(storage, tasks, taskCount, storageUsable);
                 } else if (commandName.equalsIgnoreCase("unmark")) {
                     unmarkTask(trimmedCommand, tasks, taskCount, separator);
+                    saveTasks(storage, tasks, taskCount, storageUsable);
                 } else if (commandName.equalsIgnoreCase("delete")) {
                     taskCount = deleteTask(trimmedCommand, tasks, taskCount, separator);
+                    saveTasks(storage, tasks, taskCount, storageUsable);
                 } else {
                     if (taskCount == tasks.length) {
                         throw new FoxException("☹ OOPS!!! Your task list is full.");
@@ -63,6 +83,7 @@ public class Fox {
                     Task task = parseTask(commandName, trimmedCommand);
                     tasks[taskCount] = task;
                     taskCount++;
+                    saveTasks(storage, tasks, taskCount, storageUsable);
                     System.out.println(separator);
                     printHappyExpression();
                     System.out.println("     Got it. I've added this task:");
@@ -77,6 +98,8 @@ public class Fox {
                 System.out.println(separator);
             }
         }
+
+        scanner.close();
     }
 
     /**
@@ -241,5 +264,22 @@ public class Fox {
      */
     private static void printSadExpression() {
         System.out.println(SAD_EXPRESSION);
+    }
+
+    /** Saves the current state and reports failures without interrupting command processing. */
+    private static void saveTasks(Storage storage, Task[] tasks, int taskCount, boolean storageUsable) {
+        if (!storageUsable) {
+            return;
+        }
+        try {
+            storage.save(tasks, taskCount);
+        } catch (Storage.StorageException exception) {
+            printStorageError(exception);
+        }
+    }
+
+    /** Prints a concise storage error instead of exposing a stack trace to normal users. */
+    private static void printStorageError(Storage.StorageException exception) {
+        System.out.println("☹ OOPS!!! " + exception.getMessage());
     }
 }

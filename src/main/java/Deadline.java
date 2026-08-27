@@ -15,6 +15,11 @@ public class Deadline extends Task {
         this.by = by;
     }
 
+    /** Returns the deadline time for persistence. */
+    public String getBy() {
+        return by;
+    }
+
     /**
      * Returns this deadline task in its display format.
      *
