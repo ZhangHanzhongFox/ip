@@ -3,6 +3,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -146,7 +148,8 @@ public class Storage {
                 String deadlineTime = decode(parts[3]);
                 requireNonBlank(deadlineDescription);
                 requireNonBlank(deadlineTime);
-                task = new Deadline(deadlineDescription, deadlineTime);
+                task = parseDeadlineValue(deadlineTime, lineNumber)
+                        .toDeadline(deadlineDescription);
                 break;
             case "E":
                 requireFieldCount(parts, 5);
@@ -168,6 +171,46 @@ public class Storage {
         } catch (IllegalArgumentException exception) {
             throw new StorageException("Invalid data on line " + lineNumber
                     + " in '" + dataFile + "'.", exception);
+        }
+    }
+
+    /**
+     * Loads ISO dates as typed values while retaining older free-form Level-7 values.
+     */
+    private static DeadlineValue parseDeadlineValue(String value, int lineNumber)
+            throws StorageException {
+        if (!value.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            if (value.matches("\\d{4}[-/.]\\d{1,2}[-/.]\\d{1,2}")) {
+                throw new StorageException("Invalid data on line " + lineNumber
+                        + ": deadline date is not valid.");
+            }
+            return new DeadlineValue(value);
+        }
+        try {
+            return new DeadlineValue(LocalDate.parse(value, FoxDate.INPUT_FORMAT));
+        } catch (DateTimeParseException exception) {
+            throw new StorageException("Invalid data on line " + lineNumber
+                    + ": deadline date is not valid.", exception);
+        }
+    }
+
+    /** Small carrier used to keep legacy and typed deadline loading explicit. */
+    private static final class DeadlineValue {
+        private final LocalDate date;
+        private final String text;
+
+        DeadlineValue(LocalDate date) {
+            this.date = date;
+            this.text = null;
+        }
+
+        DeadlineValue(String text) {
+            this.date = null;
+            this.text = text;
+        }
+
+        Deadline toDeadline(String description) {
+            return date == null ? new Deadline(description, text) : new Deadline(description, date);
         }
     }
 

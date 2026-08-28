@@ -128,7 +128,7 @@ public class Fox {
             if (parts.length != 2 || parts[1].isBlank()) {
                 throw new FoxException("☹ OOPS!!! The deadline time cannot be empty.");
             }
-            return new Deadline(parts[0].trim(), parts[1].trim());
+            return new Deadline(parts[0].trim(), FoxDate.parse(parts[1].trim()));
         }
 
         if (commandName.equalsIgnoreCase("event")) {

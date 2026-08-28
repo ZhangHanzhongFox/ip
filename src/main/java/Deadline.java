@@ -1,8 +1,11 @@
+import java.time.LocalDate;
+
 /**
  * Represents a task with a deadline.
  */
 public class Deadline extends Task {
-    private final String by;
+    private final LocalDate byDate;
+    private final String legacyBy;
 
     /**
      * Creates a new unfinished deadline task.
@@ -10,14 +13,30 @@ public class Deadline extends Task {
      * @param description the task description
      * @param by the deadline time
      */
-    public Deadline(String description, String by) {
+    public Deadline(String description, LocalDate by) {
         super(description);
-        this.by = by;
+        this.byDate = by;
+        this.legacyBy = null;
     }
 
-    /** Returns the deadline time for persistence. */
+    /**
+     * Creates a legacy deadline whose free-form value is retained for old Fox data.
+     * New commands should use the typed constructor.
+     */
+    public Deadline(String description, String by) {
+        super(description);
+        this.byDate = null;
+        this.legacyBy = by;
+    }
+
+    /** Returns the typed deadline date, or {@code null} for legacy free-form data. */
+    public LocalDate getByDate() {
+        return byDate;
+    }
+
+    /** Returns the exact value to write to Fox storage. */
     public String getBy() {
-        return by;
+        return byDate == null ? legacyBy : FoxDate.INPUT_FORMAT.format(byDate);
     }
 
     /**
@@ -27,6 +46,7 @@ public class Deadline extends Task {
      */
     @Override
     public String toString() {
-        return "[D]" + super.toString() + " (by: " + by + ")";
+        String displayValue = byDate == null ? legacyBy : FoxDate.format(byDate);
+        return "[D]" + super.toString() + " (by: " + displayValue + ")";
     }
 }
