@@ -2,8 +2,8 @@
  * Represents a task in Fox's task list.
  */
 public class Task {
-    protected String description;
-    protected boolean isDone;
+    private final String description;
+    private boolean isDone;
 
     /**
      * Creates a new unfinished task.

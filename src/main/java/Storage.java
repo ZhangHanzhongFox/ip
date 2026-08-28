@@ -19,9 +19,8 @@ import java.util.List;
 public class Storage {
     /** The default data file, relative to the directory from which Fox starts. */
     public static final Path DEFAULT_FILE = Path.of("data", "fox.txt");
-    private static final String SEPARATOR = "|";
-
     private final Path dataFile;
+    private final TaskStorageCodec taskCodec;
 
     /** Creates storage using the default relative data-file path. */
     public Storage() {
@@ -31,6 +30,7 @@ public class Storage {
     /** Creates storage using a caller-supplied path, useful for tests. */
     public Storage(Path dataFile) {
         this.dataFile = dataFile;
+        this.taskCodec = new TaskStorageCodec();
     }
 
     /**
@@ -78,7 +78,7 @@ public class Storage {
             }
             List<String> lines = new ArrayList<>();
             for (int i = 0; i < taskCount; i++) {
-                lines.add(formatTask(tasks[i]));
+                lines.add(taskCodec.encode(tasks[i]));
             }
             Path temporaryFile = Files.createTempFile(parent == null ? Path.of(".") : parent,
                     dataFile.getFileName().toString(), ".tmp");
@@ -96,35 +96,6 @@ public class Storage {
         } catch (IOException exception) {
             throw new StorageException("Could not write data file '" + dataFile + "'.", exception);
         }
-    }
-
-    private static String formatTask(Task task) throws StorageException {
-        if (task == null) {
-            throw new StorageException("Cannot save a missing task.");
-        }
-        String type;
-        String[] fields;
-        if (task instanceof Todo) {
-            type = "T";
-            fields = new String[] {task.getDescription()};
-        } else if (task instanceof Deadline deadline) {
-            type = "D";
-            fields = new String[] {deadline.getDescription(), deadline.getBy()};
-        } else if (task instanceof Event event) {
-            type = "E";
-            fields = new String[] {event.getDescription(), event.getFrom(), event.getTo()};
-        } else {
-            throw new StorageException("Cannot save an unsupported task type.");
-        }
-        StringBuilder result = new StringBuilder(type).append(SEPARATOR)
-                .append(task.isDone()).append(SEPARATOR);
-        for (int i = 0; i < fields.length; i++) {
-            if (i > 0) {
-                result.append(SEPARATOR);
-            }
-            result.append(encode(fields[i]));
-        }
-        return result.toString();
     }
 
     private static Task parseLine(String line, int lineNumber, Path dataFile) throws StorageException {
@@ -224,10 +195,6 @@ public class Storage {
         if (value.isBlank()) {
             throw new IllegalArgumentException("a task field cannot be empty");
         }
-    }
-
-    private static String encode(String value) {
-        return Base64.getEncoder().encodeToString(value.getBytes(StandardCharsets.UTF_8));
     }
 
     private static String decode(String value) {
