@@ -7,9 +7,22 @@ public class StorageTest {
     /** Runs all storage tests. */
     public static void main(String[] args) throws Exception {
         testRoundTrip();
+        testTypedDeadlineRoundTrip();
         testEmptyAndMissingFile();
         testCorruptedFile();
+        testMalformedTypedDeadline();
         testReadAndWriteFailures();
+    }
+
+    private static void testTypedDeadlineRoundTrip() throws Exception {
+        Path file = Files.createTempFile("fox-storage-date", ".txt");
+        Storage storage = new Storage(file);
+        Deadline deadline = new Deadline("submit report", FoxDate.parse("2026-12-02"));
+        storage.save(new Task[] {deadline}, 1);
+        Task loaded = storage.load()[0];
+        assert loaded.toString().equals("[D][ ] submit report (by: Dec 02 2026)")
+                : loaded;
+        assert ((Deadline) loaded).getByDate().equals(FoxDate.parse("2026-12-02"));
     }
 
     private static void testRoundTrip() throws Exception {
@@ -47,6 +60,21 @@ public class StorageTest {
             throw new AssertionError("Corrupted data should fail to load");
         } catch (Storage.StorageException exception) {
             assert exception.getMessage().contains("Invalid data");
+        }
+        assert Files.readString(file).equals(original);
+    }
+
+    private static void testMalformedTypedDeadline() throws Exception {
+        Path file = Files.createTempFile("fox-storage-date-corrupt", ".txt");
+        String encodedDescription = java.util.Base64.getEncoder()
+                .encodeToString("submit report".getBytes(StandardCharsets.UTF_8));
+        String original = "D|false|" + encodedDescription + "|MjAyNi0wMi0zMA==\n";
+        Files.writeString(file, original, StandardCharsets.UTF_8);
+        try {
+            new Storage(file).load();
+            throw new AssertionError("Impossible stored date should fail to load");
+        } catch (Storage.StorageException exception) {
+            assert exception.getMessage().contains("deadline date is not valid");
         }
         assert Files.readString(file).equals(original);
     }

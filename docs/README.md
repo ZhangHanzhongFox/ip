@@ -8,17 +8,16 @@
 
 ## Adding deadlines
 
-// Describe the action and its outcome.
+Use `deadline <description> /by <date>` to add a deadline. Dates must use
+`yyyy-MM-dd`, such as `2026-12-02`.
 
-// Give examples of usage
+Fox validates that the date exists and displays valid dates as `MMM dd yyyy`.
+For example:
 
-Example: `keyword (optional arguments)`
+Example: `deadline submit report /by 2026-12-02`
 
-// A description of the expected outcome goes here
-
-```
-expected output
-```
+The deadline is displayed as `(by: Dec 02 2026)` and is restored after Fox is
+restarted.
 
 ## Feature ABC
 
