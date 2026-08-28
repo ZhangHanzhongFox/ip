@@ -1,8 +1,12 @@
+package fox;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
+
+import fox.storage.Storage;
 
 /** Integration test for saving after a command and restoring after restart. */
 public class FoxPersistenceTest {
@@ -38,7 +42,7 @@ public class FoxPersistenceTest {
     private static String runFox(Path directory, String classPath, String input)
             throws IOException, InterruptedException {
         Process process = new ProcessBuilder(System.getProperty("java.home") + "/bin/java",
-                "-cp", classPath, "Fox")
+                "-cp", classPath, "fox.Fox")
                 .directory(directory.toFile())
                 .redirectErrorStream(true)
                 .start();

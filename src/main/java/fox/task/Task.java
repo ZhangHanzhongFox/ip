@@ -1,3 +1,5 @@
+package fox.task;
+
 /**
  * Represents a task in Fox's task list.
  */

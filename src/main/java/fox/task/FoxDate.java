@@ -1,8 +1,12 @@
+package fox.task;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 import java.util.Locale;
+
+import fox.exception.FoxException;
 
 /** Provides the single date format used by Fox's Level-8 deadline support. */
 public final class FoxDate {

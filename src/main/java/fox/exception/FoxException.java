@@ -1,3 +1,5 @@
+package fox.exception;
+
 /**
  * Represents an error caused by an invalid Fox command.
  */

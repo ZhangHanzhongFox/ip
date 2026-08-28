@@ -1,6 +1,14 @@
+package fox.storage;
+
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import fox.task.Deadline;
+import fox.task.Event;
+import fox.task.FoxDate;
+import fox.task.Task;
+import fox.task.Todo;
 
 /** Dependency-free tests for Level-7 file persistence. Run with assertions enabled. */
 public class StorageTest {

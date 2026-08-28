@@ -1,4 +1,13 @@
+package fox;
+
 import java.util.Scanner;
+
+import fox.exception.FoxException;
+import fox.parser.TaskParser;
+import fox.storage.Storage;
+import fox.task.Task;
+import fox.task.TaskList;
+import fox.ui.FoxUi;
 
 /** Runs Fox and coordinates input, domain operations, persistence, and presentation. */
 public class Fox {

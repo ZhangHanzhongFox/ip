@@ -1,6 +1,10 @@
+package fox.task;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import fox.exception.FoxException;
 
 /**
  * Encapsulates Fox's ordered collection of tasks and its capacity rules.

@@ -1,3 +1,7 @@
+package fox.task;
+
+import fox.exception.FoxException;
+
 /** Dependency-free tests for the encapsulated task collection. */
 public class TaskListTest {
     /** Runs task-list tests with assertions enabled. */

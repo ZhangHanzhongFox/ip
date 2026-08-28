@@ -1,4 +1,12 @@
+package fox.parser;
+
 import java.time.LocalDate;
+
+import fox.exception.FoxException;
+import fox.task.Deadline;
+import fox.task.Event;
+import fox.task.Task;
+import fox.task.Todo;
 
 /** Dependency-free tests for task command parsing. */
 public class TaskParserTest {

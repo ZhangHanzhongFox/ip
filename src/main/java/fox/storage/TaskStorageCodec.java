@@ -1,5 +1,12 @@
+package fox.storage;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+
+import fox.task.Deadline;
+import fox.task.Event;
+import fox.task.Task;
+import fox.task.Todo;
 
 /** Converts task objects into Fox's persisted record format. */
 public class TaskStorageCodec {

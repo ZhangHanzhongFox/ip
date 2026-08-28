@@ -1,3 +1,12 @@
+package fox.parser;
+
+import fox.exception.FoxException;
+import fox.task.Deadline;
+import fox.task.Event;
+import fox.task.FoxDate;
+import fox.task.Task;
+import fox.task.Todo;
+
 /** Parses task-creation commands without knowing about Fox's UI or storage. */
 public class TaskParser {
     /** Creates a task from a complete, trimmed task-creation command. */

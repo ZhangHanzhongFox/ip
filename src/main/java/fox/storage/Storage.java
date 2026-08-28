@@ -1,3 +1,5 @@
+package fox.storage;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -8,6 +10,12 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+
+import fox.task.Deadline;
+import fox.task.Event;
+import fox.task.FoxDate;
+import fox.task.Task;
+import fox.task.Todo;
 
 /**
  * Reads and writes Fox's tasks from a local text file.

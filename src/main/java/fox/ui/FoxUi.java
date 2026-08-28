@@ -1,3 +1,8 @@
+package fox.ui;
+
+import fox.task.Task;
+import fox.task.TaskList;
+
 /** Owns Fox's console presentation while leaving command logic in domain classes. */
 public class FoxUi {
     public static final String SEPARATOR = "    ____________________________________________________________";
