@@ -9,6 +9,12 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.0'
+}
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(25)
@@ -23,8 +29,8 @@ application {
     mainClass = 'fox.Fox'
 }
 
-// Fox's existing tests are dependency-free main methods. Keep them intact and
-// run every one through Gradle's standard `test` lifecycle task with assertions.
+// Keep Fox's original executable tests as regression checks while adding proper
+// JUnit tests for Gradle and IDE test discovery.
 def foxTestClasses = [
         'fox.parser.TaskParserTest',
         'fox.storage.StorageTest',
@@ -33,9 +39,15 @@ def foxTestClasses = [
 ]
 
 tasks.named('test') {
-    // Gradle's Test task otherwise expects JUnit/TestNG discovery. The project
-    // deliberately uses executable test classes, so discovery is not required.
+    useJUnitPlatform()
     failOnNoDiscoveredTests = false
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        exceptionFormat 'full'
+        showExceptions = true
+        showCauses = true
+        showStackTraces = true
+    }
     doLast {
         foxTestClasses.each { testClass ->
             logger.lifecycle("Running Fox test ${testClass}")
