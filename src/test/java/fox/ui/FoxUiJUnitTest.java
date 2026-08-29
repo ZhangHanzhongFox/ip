@@ -39,7 +39,7 @@ class FoxUiJUnitTest {
         String text = output.toString();
 
         assertTrue(text.contains("Here are the tasks in your list:"));
-        assertTrue(text.contains("1.[ ] read book"));
+        assertTrue(text.contains("1.[T][ ] read book"));
         assertTrue(text.contains("bad command"));
         assertTrue(text.contains("•︵•"));
     }

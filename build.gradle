@@ -12,10 +12,10 @@ repositories {
 }
 
 dependencies {
-    String junitVersion = '5.14.4'
+    String jUnitVersion = '5.14.4'
 
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${jUnitVersion}"
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.14.4'
 }
 
@@ -41,27 +41,33 @@ def foxTestClasses = [
         'fox.FoxPersistenceTest'
 ]
 
+def legacyTestTasks = foxTestClasses.collect { testClass ->
+    String shortName = testClass.substring(testClass.lastIndexOf('.') + 1)
+    tasks.register("runLegacy${shortName}", JavaExec) {
+        group = 'verification'
+        description = "Runs the legacy executable test ${testClass}."
+        classpath = sourceSets.test.runtimeClasspath
+        mainClass = testClass
+        enableAssertions = true
+    }
+}
+
 test {
     useJUnitPlatform()
+
     failOnNoDiscoveredTests = false
+
     testLogging {
         events 'passed', 'skipped', 'failed'
+
         showExceptions = true
         exceptionFormat = 'full'
         showCauses = true
         showStackTraces = true
         showStandardStreams = false
     }
-    doLast {
-        foxTestClasses.each { testClass ->
-            logger.lifecycle("Running Fox test ${testClass}")
-            project.javaexec {
-                classpath = sourceSets.test.runtimeClasspath
-                mainClass = testClass
-                enableAssertions = true
-            }
-        }
-    }
+
+    dependsOn legacyTestTasks
 }
 
 jar {
@@ -75,4 +81,25 @@ shadowJar {
 
 run {
     standardInput = System.in
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    String javaFxVersion = '17.0.7'
+
+    implementation("org.openjfx:javafx-base:${javaFxVersion}:win")
+    implementation("org.openjfx:javafx-base:${javaFxVersion}:mac")
+    implementation("org.openjfx:javafx-base:${javaFxVersion}:linux")
+    implementation("org.openjfx:javafx-controls:${javaFxVersion}:win")
+    implementation("org.openjfx:javafx-controls:${javaFxVersion}:mac")
+    implementation("org.openjfx:javafx-controls:${javaFxVersion}:linux")
+    implementation("org.openjfx:javafx-fxml:${javaFxVersion}:win")
+    implementation("org.openjfx:javafx-fxml:${javaFxVersion}:mac")
+    implementation("org.openjfx:javafx-fxml:${javaFxVersion}:linux")
+    implementation("org.openjfx:javafx-graphics:${javaFxVersion}:win")
+    implementation("org.openjfx:javafx-graphics:${javaFxVersion}:mac")
+    implementation("org.openjfx:javafx-graphics:${javaFxVersion}:linux")
 }

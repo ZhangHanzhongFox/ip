@@ -37,7 +37,7 @@ class StorageJUnitTest {
         assertTrue(Files.isRegularFile(file));
         assertEquals("[T][X] buy | milk", loaded[0].toString());
         assertEquals("[D][ ] submit (by: Dec 02 2026)", loaded[1].toString());
-        assertEquals("[E][ ] meeting (from: 10am to 11am)", loaded[2].toString());
+        assertEquals("[E][ ] meeting (from: 10am to: 11am)", loaded[2].toString());
         assertEquals(3, loaded.length);
     }
 

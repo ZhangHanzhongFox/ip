@@ -39,6 +39,6 @@ class TaskJUnitTest {
 
         assertEquals("2026-12-02", deadline.getBy());
         assertEquals("[D][ ] submit (by: Dec 02 2026)", deadline.toString());
-        assertEquals("[E][ ] meeting (from: 10am to 11am)", event.toString());
+        assertEquals("[E][ ] meeting (from: 10am to: 11am)", event.toString());
     }
 }
