@@ -21,7 +21,13 @@ public final class FoxDate {
         // Utility class.
     }
 
-    /** Parses a strict ISO-style date and turns malformed input into a Fox error. */
+    /**
+     * Parses a strict ISO-style date and turns malformed input into a Fox error.
+     *
+     * @param value the date text in {@code yyyy-MM-dd} format
+     * @return the parsed date
+     * @throws FoxException if {@code value} is not a valid strict date
+     */
     public static LocalDate parse(String value) throws FoxException {
         try {
             return LocalDate.parse(value, INPUT_FORMAT);
@@ -30,7 +36,12 @@ public final class FoxDate {
         }
     }
 
-    /** Formats a typed date for display. */
+    /**
+     * Formats a typed date for display.
+     *
+     * @param date the date to format; must not be {@code null}
+     * @return the date in Fox's user-facing display format
+     */
     public static String format(LocalDate date) {
         return DISPLAY_FORMAT.format(date);
     }

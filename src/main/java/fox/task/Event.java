@@ -20,12 +20,20 @@ public class Event extends Task {
         this.to = to;
     }
 
-    /** Returns the event start time for persistence. */
+    /**
+     * Returns the event start time for persistence.
+     *
+     * @return the event start time
+     */
     public String getFrom() {
         return from;
     }
 
-    /** Returns the event end time for persistence. */
+    /**
+     * Returns the event end time for persistence.
+     *
+     * @return the event end time
+     */
     public String getTo() {
         return to;
     }

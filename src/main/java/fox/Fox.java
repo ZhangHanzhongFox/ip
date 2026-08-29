@@ -21,7 +21,11 @@ public class Fox {
     /** Creates a Fox application using the default task storage. */
     public Fox() { this(new Storage()); }
 
-    /** Creates a Fox application with injected storage, useful for tests. */
+    /**
+     * Creates a Fox application with injected storage.
+     *
+     * @param storage the storage used to load and save tasks; must not be {@code null}
+     */
     public Fox(Storage storage) {
         this.storage = storage;
         this.taskParser = new TaskParser();
@@ -29,7 +33,11 @@ public class Fox {
         this.taskList = new TaskList(MAX_TASKS);
     }
 
-    /** Starts Fox's command loop. */
+    /**
+     * Starts Fox's command loop and processes commands until input ends or the user says {@code bye}.
+     *
+     * @param scanner the input source for Fox commands; must not be {@code null}
+     */
     public void run(Scanner scanner) {
         loadTasks();
         System.out.print("  /\\_/\\\n ( •ᴗ• )   Hi! I'm Fox, your little companion. 🦊\n"
@@ -55,6 +63,7 @@ public class Fox {
         }
     }
 
+    /** Loads persisted tasks, retaining an empty in-memory list if storage is unavailable. */
     private void loadTasks() {
         try {
             taskList = new TaskList(storage.load(), MAX_TASKS);
@@ -64,6 +73,7 @@ public class Fox {
         }
     }
 
+    /** Dispatches one non-empty command to the appropriate domain and UI operations. */
     private void execute(String command) throws FoxException {
         String commandName = command.split("\\s+", 2)[0];
         if (command.equalsIgnoreCase("list")) {
@@ -86,6 +96,7 @@ public class Fox {
         }
     }
 
+    /** Extracts and validates the one-based task number required by a task action. */
     private int parseTaskNumber(String command, String action) throws FoxException {
         String[] parts = command.split("\\s+");
         if (parts.length != 2) {
@@ -101,6 +112,7 @@ public class Fox {
         }
     }
 
+    /** Persists the current task list when storage is still usable. */
     private void saveTasks() {
         if (!storageUsable) { return; }
         try {
@@ -110,6 +122,10 @@ public class Fox {
         }
     }
 
-    /** Application entry point. */
+    /**
+     * Starts Fox using standard input.
+     *
+     * @param args command-line arguments; currently ignored
+     */
     public static void main(String[] args) { new Fox().run(new Scanner(System.in)); }
 }
