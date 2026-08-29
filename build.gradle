@@ -12,16 +12,17 @@ repositories {
 }
 
 dependencies {
-    String jUnitVersion = '5.14.4'
+    String junitVersion = '5.14.4'
 
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitVersion}"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${jUnitVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.14.4'
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_25
-    targetCompatibility = JavaVersion.VERSION_25
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -32,6 +33,7 @@ application {
     mainClass = 'fox.Fox'
 }
 
+// Keep Fox's original executable tests as regression checks alongside JUnit.
 def foxTestClasses = [
         'fox.parser.TaskParserTest',
         'fox.storage.StorageTest',
@@ -42,7 +44,6 @@ def foxTestClasses = [
 test {
     useJUnitPlatform()
     failOnNoDiscoveredTests = false
-
     testLogging {
         events 'passed', 'skipped', 'failed'
         showExceptions = true
@@ -51,7 +52,6 @@ test {
         showStackTraces = true
         showStandardStreams = false
     }
-
     doLast {
         foxTestClasses.each { testClass ->
             logger.lifecycle("Running Fox test ${testClass}")
