@@ -12,7 +12,17 @@ import fox.task.Todo;
 public class TaskStorageCodec {
     private static final String SEPARATOR = "|";
 
-    /** Serializes one task, rejecting null and unsupported task implementations. */
+    /** Creates a codec for Fox's persisted task records. */
+    public TaskStorageCodec() {
+    }
+
+    /**
+     * Serializes one task in Fox's Base64-encoded persistence format.
+     *
+     * @param task the task to serialize; must be a supported non-null task type
+     * @return one persisted record without a trailing line separator
+     * @throws Storage.StorageException if {@code task} is {@code null} or unsupported
+     */
     public String encode(Task task) throws Storage.StorageException {
         if (task == null) {
             throw new Storage.StorageException("Cannot save a missing task.");

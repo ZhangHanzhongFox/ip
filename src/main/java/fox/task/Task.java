@@ -26,16 +26,12 @@ public class Task {
         return isDone ? "X" : " ";
     }
 
-    /**
-     * Marks this task as done.
-     */
+    /** Marks this task as done. */
     public void markAsDone() {
         isDone = true;
     }
 
-    /**
-     * Marks this task as not done.
-     */
+    /** Marks this task as not done. */
     public void markAsNotDone() {
         isDone = false;
     }
@@ -49,7 +45,11 @@ public class Task {
         return description;
     }
 
-    /** Returns whether this task has been marked as done. */
+    /**
+     * Returns whether this task has been marked as done.
+     *
+     * @return {@code true} when this task is complete; otherwise {@code false}
+     */
     public boolean isDone() {
         return isDone;
     }

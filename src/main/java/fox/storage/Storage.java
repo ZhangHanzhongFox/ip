@@ -39,7 +39,11 @@ public class Storage {
         this(DEFAULT_FILE);
     }
 
-    /** Creates storage using a caller-supplied path, useful for tests. */
+    /**
+     * Creates storage using a caller-supplied path.
+     *
+     * @param dataFile the file used for persistence; its parent directory is created when needed
+     */
     public Storage(Path dataFile) {
         this.dataFile = dataFile;
         this.taskCodec = new TaskStorageCodec();
@@ -78,8 +82,8 @@ public class Storage {
     /**
      * Saves tasks atomically, preserving the previous file if writing fails.
      *
-     * @param tasks the task array
-     * @param taskCount number of occupied entries in the array
+     * @param tasks the task array; entries from index {@code 0} through {@code taskCount - 1} must be non-null
+     * @param taskCount number of occupied entries in the array, from {@code 0} through {@code tasks.length}
      * @throws StorageException if the data cannot be written
      */
     public void save(Task[] tasks, int taskCount) throws StorageException {
@@ -110,6 +114,7 @@ public class Storage {
         }
     }
 
+    /** Parses one persisted record and reports its source line in any format error. */
     private static Task parseLine(String line, int lineNumber, Path dataFile) throws StorageException {
         String[] parts = line.split("\\|", -1);
         try {
@@ -182,33 +187,39 @@ public class Storage {
         private final LocalDate date;
         private final String text;
 
+        /** Creates a carrier for a typed deadline date. */
         DeadlineValue(LocalDate date) {
             this.date = date;
             this.text = null;
         }
 
+        /** Creates a carrier for a legacy free-form deadline value. */
         DeadlineValue(String text) {
             this.date = null;
             this.text = text;
         }
 
+        /** Creates a deadline using whichever representation this carrier contains. */
         Deadline toDeadline(String description) {
             return date == null ? new Deadline(description, text) : new Deadline(description, date);
         }
     }
 
+    /** Checks that a decoded record has the expected number of fields. */
     private static void requireFieldCount(String[] parts, int expected) {
         if (parts.length != expected) {
             throw new IllegalArgumentException("invalid field count");
         }
     }
 
+    /** Checks that a decoded task field contains visible content. */
     private static void requireNonBlank(String value) {
         if (value.isBlank()) {
             throw new IllegalArgumentException("a task field cannot be empty");
         }
     }
 
+    /** Decodes one Base64-encoded persisted field as UTF-8 text. */
     private static String decode(String value) {
         return new String(Base64.getDecoder().decode(value), StandardCharsets.UTF_8);
     }
@@ -216,12 +227,21 @@ public class Storage {
     /** A user-facing storage or data-format failure. */
     public static class StorageException extends Exception {
         private static final long serialVersionUID = 1L;
-        /** Creates a storage failure with a concise message. */
+        /**
+         * Creates a storage failure with a concise message.
+         *
+         * @param message the explanation of the storage failure
+         */
         public StorageException(String message) {
             super(message);
         }
 
-        /** Creates a storage failure while retaining the underlying cause. */
+        /**
+         * Creates a storage failure while retaining the underlying cause.
+         *
+         * @param message the explanation of the storage failure
+         * @param cause the underlying failure that caused this exception
+         */
         public StorageException(String message, Throwable cause) {
             super(message, cause);
         }

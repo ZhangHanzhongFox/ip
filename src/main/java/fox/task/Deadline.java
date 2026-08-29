@@ -24,6 +24,9 @@ public class Deadline extends Task {
     /**
      * Creates a legacy deadline whose free-form value is retained for old Fox data.
      * New commands should use the typed constructor.
+     *
+     * @param description the task description
+     * @param by the legacy free-form deadline value
      */
     public Deadline(String description, String by) {
         super(description);
@@ -31,12 +34,20 @@ public class Deadline extends Task {
         this.legacyBy = by;
     }
 
-    /** Returns the typed deadline date, or {@code null} for legacy free-form data. */
+    /**
+     * Returns the typed deadline date, or {@code null} for legacy free-form data.
+     *
+     * @return the typed deadline date, or {@code null} when this is a legacy deadline
+     */
     public LocalDate getByDate() {
         return byDate;
     }
 
-    /** Returns the exact value to write to Fox storage. */
+    /**
+     * Returns the exact value to write to Fox storage.
+     *
+     * @return the ISO date for a typed deadline or the original legacy text
+     */
     public String getBy() {
         return byDate == null ? legacyBy : FoxDate.INPUT_FORMAT.format(byDate);
     }

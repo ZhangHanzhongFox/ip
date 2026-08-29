@@ -9,7 +9,18 @@ import fox.task.Todo;
 
 /** Parses task-creation commands without knowing about Fox's UI or storage. */
 public class TaskParser {
-    /** Creates a task from a complete, trimmed task-creation command. */
+    /** Creates a parser for Fox task-creation commands. */
+    public TaskParser() {
+    }
+
+    /**
+     * Creates a task from a complete, trimmed task-creation command.
+     *
+     * @param commandName the first word of {@code command}, such as {@code todo} or {@code deadline}
+     * @param command the complete task-creation command
+     * @return the task represented by the command
+     * @throws FoxException if the command is unknown or has missing or malformed task details
+     */
     public Task parse(String commandName, String command) throws FoxException {
         String details = command.substring(commandName.length()).trim();
         if (commandName.equalsIgnoreCase("todo")) {
