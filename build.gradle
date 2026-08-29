@@ -1,0 +1,55 @@
+plugins {
+    id 'application'
+}
+
+group = 'fox'
+version = '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+application {
+    mainClass = 'fox.Fox'
+}
+
+// Fox's existing tests are dependency-free main methods. Keep them intact and
+// run every one through Gradle's standard `test` lifecycle task with assertions.
+def foxTestClasses = [
+        'fox.parser.TaskParserTest',
+        'fox.storage.StorageTest',
+        'fox.task.TaskListTest',
+        'fox.FoxPersistenceTest'
+]
+
+tasks.named('test') {
+    // Gradle's Test task otherwise expects JUnit/TestNG discovery. The project
+    // deliberately uses executable test classes, so discovery is not required.
+    failOnNoDiscoveredTests = false
+    doLast {
+        foxTestClasses.each { testClass ->
+            logger.lifecycle("Running Fox test ${testClass}")
+            project.javaexec {
+                classpath = sourceSets.test.runtimeClasspath
+                mainClass = testClass
+                enableAssertions = true
+            }
+        }
+    }
+}
+
+tasks.named('jar') {
+    manifest {
+        attributes('Main-Class': application.mainClass.get())
+    }
+}

@@ -25,12 +25,16 @@ import fox.task.Todo;
  * normal text, including the separator character.</p>
  */
 public class Storage {
-    /** The default data file, relative to the directory from which Fox starts. */
-    public static final Path DEFAULT_FILE = Path.of("data", "fox.txt");
+    /**
+     * The default data file resolved once at startup, so later working-directory
+     * changes cannot silently redirect Fox's persistence.
+     */
+    public static final Path DEFAULT_FILE = Path.of(System.getProperty("user.dir"),
+            "data", "fox.txt").toAbsolutePath().normalize();
     private final Path dataFile;
     private final TaskStorageCodec taskCodec;
 
-    /** Creates storage using the default relative data-file path. */
+    /** Creates storage using Fox's startup-directory data-file path. */
     public Storage() {
         this(DEFAULT_FILE);
     }
