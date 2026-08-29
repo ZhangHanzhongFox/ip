@@ -1,5 +1,7 @@
 plugins {
+    id 'java'
     id 'application'
+    id 'com.gradleup.shadow' version '9.5.1'
 }
 
 group = 'fox'
@@ -10,15 +12,16 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.0'
+    String jUnitVersion = '5.14.4'
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${jUnitVersion}"
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.14.4'
 }
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
-    }
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -29,8 +32,6 @@ application {
     mainClass = 'fox.Fox'
 }
 
-// Keep Fox's original executable tests as regression checks while adding proper
-// JUnit tests for Gradle and IDE test discovery.
 def foxTestClasses = [
         'fox.parser.TaskParserTest',
         'fox.storage.StorageTest',
@@ -38,16 +39,19 @@ def foxTestClasses = [
         'fox.FoxPersistenceTest'
 ]
 
-tasks.named('test') {
+test {
     useJUnitPlatform()
     failOnNoDiscoveredTests = false
+
     testLogging {
         events 'passed', 'skipped', 'failed'
-        exceptionFormat 'full'
         showExceptions = true
+        exceptionFormat = 'full'
         showCauses = true
         showStackTraces = true
+        showStandardStreams = false
     }
+
     doLast {
         foxTestClasses.each { testClass ->
             logger.lifecycle("Running Fox test ${testClass}")
@@ -60,8 +64,15 @@ tasks.named('test') {
     }
 }
 
-tasks.named('jar') {
-    manifest {
-        attributes('Main-Class': application.mainClass.get())
-    }
+jar {
+    enabled = false
+    archiveClassifier = 'without-dependencies'
+}
+
+shadowJar {
+    archiveFileName = 'fox.jar'
+}
+
+run {
+    standardInput = System.in
 }
