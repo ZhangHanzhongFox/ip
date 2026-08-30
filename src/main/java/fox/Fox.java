@@ -19,7 +19,9 @@ public class Fox {
     private boolean storageUsable = true;
 
     /** Creates a Fox application using the default task storage. */
-    public Fox() { this(new Storage()); }
+    public Fox() {
+        this(new Storage());
+    }
 
     /**
      * Creates a Fox application with injected storage.
@@ -46,7 +48,9 @@ public class Fox {
         System.out.println(FoxUi.SEPARATOR);
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine().trim();
-            if (command.isEmpty()) { continue; }
+            if (command.isEmpty()) {
+                continue;
+            }
             try {
                 if (command.equalsIgnoreCase("bye")) {
                     saveTasks();
@@ -114,7 +118,9 @@ public class Fox {
 
     /** Persists the current task list when storage is still usable. */
     private void saveTasks() {
-        if (!storageUsable) { return; }
+        if (!storageUsable) {
+            return;
+        }
         try {
             storage.save(taskList.toArray(), taskList.size());
         } catch (Storage.StorageException exception) {
@@ -127,5 +133,7 @@ public class Fox {
      *
      * @param args command-line arguments; currently ignored
      */
-    public static void main(String[] args) { new Fox().run(new Scanner(System.in)); }
+    public static void main(String[] args) {
+        new Fox().run(new Scanner(System.in));
+    }
 }
