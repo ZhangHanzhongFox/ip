@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 public class Fox {
     private static final int MAX_TASKS = 100;
@@ -67,6 +68,8 @@ public class Fox {
                         System.out.println("     " + (i + 1) + "." + tasks[i].toString());
                     }
                     System.out.println(separator);
+                } else if (commandName.equalsIgnoreCase("find")) {
+                    findTasks(trimmedCommand, tasks, taskCount, separator);
                 } else if (commandName.equalsIgnoreCase("mark")) {
                     markTask(trimmedCommand, tasks, taskCount, separator);
                     saveTasks(storage, tasks, taskCount, storageUsable);
@@ -100,6 +103,51 @@ public class Fox {
         }
 
         scanner.close();
+    }
+
+    /**
+     * Prints tasks whose descriptions contain at least one searched keyword as a whole word.
+     *
+     * @param command the complete, trimmed find command
+     * @param tasks the task list
+     * @param taskCount the number of occupied entries in the task array
+     * @param separator the line used to separate replies
+     * @throws FoxException if the command does not contain a keyword
+     */
+    private static void findTasks(String command, Task[] tasks, int taskCount, String separator)
+            throws FoxException {
+        String[] parts = command.split("\\s+");
+        if (parts.length < 2) {
+            throw new FoxException("☹ OOPS!!! Please provide at least one keyword to find.");
+        }
+
+        System.out.println(separator);
+        printHappyExpression();
+        System.out.println("     Here are the matching tasks in your list:");
+        int matchingTaskCount = 0;
+        for (int i = 0; i < taskCount; i++) {
+            if (matchesAnyKeyword(tasks[i].getDescription(), parts)) {
+                matchingTaskCount++;
+                System.out.println("     " + (i + 1) + "." + tasks[i]);
+            }
+        }
+        if (matchingTaskCount == 0) {
+            System.out.println("     There are no matching tasks.");
+        }
+        System.out.println(separator);
+    }
+
+    /** Returns whether a description contains at least one keyword as a complete word. */
+    private static boolean matchesAnyKeyword(String description, String[] commandParts) {
+        for (int i = 1; i < commandParts.length; i++) {
+            String keyword = Pattern.quote(commandParts[i]);
+            String wholeWordPattern = "(?iu)(?<![\\p{L}\\p{N}_])" + keyword
+                    + "(?![\\p{L}\\p{N}_])";
+            if (Pattern.compile(wholeWordPattern).matcher(description).find()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
