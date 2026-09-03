@@ -35,7 +35,7 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 application {
-    mainClass = 'fox.Fox'
+    mainClass = 'fox.gui.Launcher'
 }
 
 // Keep Fox's original executable tests as regression checks alongside JUnit.

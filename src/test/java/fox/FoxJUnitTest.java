@@ -35,4 +35,17 @@ class FoxJUnitTest {
         assertTrue(text.contains("whole number"));
         assertTrue(text.contains("Bye for now!"));
     }
+
+    @Test
+    void guiResponseUsesSameCommandsAndPersistsTasks() {
+        Path dataFile = temporaryDirectory.resolve("gui-fox.txt");
+        Fox fox = new Fox(new Storage(dataFile));
+
+        assertTrue(fox.getResponse("todo remember this").contains("remember this"));
+        assertTrue(fox.getResponse("list").contains("remember this"));
+        fox.getResponse("bye");
+
+        Fox reloadedFox = new Fox(new Storage(dataFile));
+        assertTrue(reloadedFox.getResponse("list").contains("remember this"));
+    }
 }
