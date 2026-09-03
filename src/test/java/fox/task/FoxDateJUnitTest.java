@@ -23,8 +23,8 @@ class FoxDateJUnitTest {
     void rejectsImpossibleAndWronglyFormattedDates() {
         assertThrows(FoxException.class, () -> FoxDate.parse("2026-02-30"));
         assertThrows(FoxException.class, () -> FoxDate.parse("2026/12/02"));
-        FoxException exception = assertThrows(FoxException.class, () ->
-                FoxDate.parse("2026-2-2"));
+        FoxException exception = assertThrows(FoxException.class,
+                () -> FoxDate.parse("2026-2-2"));
         assertEquals("☹ OOPS!!! Please enter a valid date in yyyy-MM-dd format.",
                 exception.getMessage());
     }

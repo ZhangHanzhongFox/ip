@@ -28,10 +28,8 @@ class StorageJUnitTest {
         Storage storage = new Storage(file);
         Task doneTodo = new Todo("buy | milk");
         doneTodo.markAsDone();
-        Task[] original = {
-            doneTodo,
-            new Deadline("submit", FoxDate.parse("2026-12-02")),
-            new Event("meeting", "10am", "11am")};
+        Task[] original = {doneTodo, new Deadline("submit", FoxDate.parse("2026-12-02")),
+                new Event("meeting", "10am", "11am")};
 
         storage.save(original, original.length);
         Task[] loaded = storage.load();
@@ -59,8 +57,8 @@ class StorageJUnitTest {
         String original = "D|false|not-base64|also-not-base64\n";
         Files.writeString(file, original, StandardCharsets.UTF_8);
 
-        Storage.StorageException exception = assertThrows(Storage.StorageException.class, () ->
-                new Storage(file).load());
+        Storage.StorageException exception = assertThrows(Storage.StorageException.class,
+                () -> new Storage(file).load());
 
         assertTrue(exception.getMessage().contains("Invalid data"));
         assertEquals(original, Files.readString(file));
@@ -71,10 +69,10 @@ class StorageJUnitTest {
         Path parentFile = temporaryDirectory.resolve("parent-file");
         Files.createFile(parentFile);
 
-        Storage.StorageException writeException = assertThrows(Storage.StorageException.class, () ->
-                new Storage(parentFile.resolve("fox.txt")).save(new Task[0], 0));
-        Storage.StorageException readException = assertThrows(Storage.StorageException.class, () ->
-                new Storage(temporaryDirectory).load());
+        Storage.StorageException writeException = assertThrows(Storage.StorageException.class,
+                () -> new Storage(parentFile.resolve("fox.txt")).save(new Task[0], 0));
+        Storage.StorageException readException = assertThrows(Storage.StorageException.class,
+                () -> new Storage(temporaryDirectory).load());
 
         assertTrue(writeException.getMessage().contains("Could not write"));
         assertTrue(readException.getMessage().contains("Could not read"));
@@ -87,8 +85,8 @@ class StorageJUnitTest {
                 .encodeToString("submit".getBytes(StandardCharsets.UTF_8));
         Files.writeString(file, "D|false|" + description + "|MjAyNi0wMi0zMA==\n");
 
-        Storage.StorageException exception = assertThrows(Storage.StorageException.class, () ->
-                new Storage(file).load());
+        Storage.StorageException exception = assertThrows(Storage.StorageException.class,
+                () -> new Storage(file).load());
 
         assertTrue(exception.getMessage().contains("deadline date is not valid"));
     }

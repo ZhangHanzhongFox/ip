@@ -52,7 +52,7 @@ public class FoxFindTest {
         Path directory = Files.createTempDirectory("fox-find");
         String classPath = Path.of(System.getProperty("java.class.path")).toAbsolutePath().toString();
         Process process = new ProcessBuilder(System.getProperty("java.home") + "/bin/java",
-                "-cp", classPath, "fox.Fox")
+                "-cp", classPath, "Fox")
                 .directory(directory.toFile())
                 .redirectErrorStream(true)
                 .start();

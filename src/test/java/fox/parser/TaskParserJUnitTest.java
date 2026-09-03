@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import fox.exception.FoxException;
 import fox.task.Deadline;
 import fox.task.Event;
+import fox.task.Todo;
 
 /** JUnit tests for successful and malformed Fox task commands. */
 class TaskParserJUnitTest {
@@ -31,23 +32,23 @@ class TaskParserJUnitTest {
     void rejectsUnknownAndIncompleteCommands() {
         assertThrows(FoxException.class, () -> parser.parse("todo", "todo"));
         assertThrows(FoxException.class, () -> parser.parse("deadline", "deadline submit"));
-        assertThrows(FoxException.class, () ->
-                parser.parse("event", "event meeting /from 10am"));
-        assertThrows(FoxException.class, () ->
-                parser.parse("event", "event meeting /from 10am /to"));
-        FoxException exception = assertThrows(FoxException.class, () ->
-                parser.parse("remove", "remove book"));
+        assertThrows(FoxException.class,
+                () -> parser.parse("event", "event meeting /from 10am"));
+        assertThrows(FoxException.class,
+                () -> parser.parse("event", "event meeting /from 10am /to"));
+        FoxException exception = assertThrows(FoxException.class,
+                () -> parser.parse("remove", "remove book"));
         assertEquals("☹ OOPS!!! I'm sorry, but I don't know what that means :-(",
                 exception.getMessage());
     }
 
     @Test
     void rejectsInvalidDeadlineDateAndBlankDescriptions() {
-        assertThrows(FoxException.class, () ->
-                parser.parse("deadline", "deadline submit /by 2026-02-30"));
-        assertThrows(FoxException.class, () ->
-                parser.parse("deadline", "deadline /by 2026-12-02"));
-        assertThrows(FoxException.class, () ->
-                parser.parse("event", "event /from 10am /to 11am"));
+        assertThrows(FoxException.class,
+                () -> parser.parse("deadline", "deadline submit /by 2026-02-30"));
+        assertThrows(FoxException.class,
+                () -> parser.parse("deadline", "deadline /by 2026-12-02"));
+        assertThrows(FoxException.class,
+                () -> parser.parse("event", "event /from 10am /to 11am"));
     }
 }
