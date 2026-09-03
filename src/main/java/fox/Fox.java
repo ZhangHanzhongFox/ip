@@ -1,5 +1,7 @@
 package fox;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.Scanner;
 
 import fox.exception.FoxException;
@@ -17,6 +19,7 @@ public class Fox {
     private final FoxUi ui;
     private TaskList taskList;
     private boolean storageUsable = true;
+    private boolean tasksLoaded;
 
     /** Creates a Fox application using the default task storage. */
     public Fox() {
@@ -42,6 +45,7 @@ public class Fox {
      */
     public void run(Scanner scanner) {
         loadTasks();
+        tasksLoaded = true;
         System.out.print("  /\\_/\\\n ( •ᴗ• )   Hi! I'm Fox, your little companion. 🦊\n"
                 + "  > ^ <    I may be small, but I've got plenty of tricks up my sleeve.\n\n"
                 + "           What can I do for you?\n");
@@ -60,7 +64,7 @@ public class Fox {
                     System.out.println(FoxUi.SEPARATOR);
                     return;
                 }
-                execute(command);
+                execute(command, ui);
             } catch (FoxException exception) {
                 ui.showError(exception.getMessage());
             }
@@ -78,26 +82,56 @@ public class Fox {
     }
 
     /** Dispatches one non-empty command to the appropriate domain and UI operations. */
-    private void execute(String command) throws FoxException {
+    private void execute(String command, FoxUi responseUi) throws FoxException {
         String commandName = command.split("\\s+", 2)[0];
         if (command.equalsIgnoreCase("list")) {
-            ui.showTasks(taskList);
+            responseUi.showTasks(taskList);
         } else if (commandName.equalsIgnoreCase("mark")) {
-            ui.showMarked(taskList.markDone(parseTaskNumber(command, "mark")), true);
+            responseUi.showMarked(taskList.markDone(parseTaskNumber(command, "mark")), true);
             saveTasks();
         } else if (commandName.equalsIgnoreCase("unmark")) {
-            ui.showMarked(taskList.markNotDone(parseTaskNumber(command, "unmark")), false);
+            responseUi.showMarked(taskList.markNotDone(parseTaskNumber(command, "unmark")), false);
             saveTasks();
         } else if (commandName.equalsIgnoreCase("delete")) {
             Task deleted = taskList.delete(parseTaskNumber(command, "delete"));
-            ui.showDeleted(deleted, taskList.size());
+            responseUi.showDeleted(deleted, taskList.size());
             saveTasks();
         } else {
             Task task = taskParser.parse(commandName, command);
             taskList.add(task);
             saveTasks();
-            ui.showAdded(task, taskList.size());
+            responseUi.showAdded(task, taskList.size());
         }
+    }
+
+    /**
+     * Processes one GUI command and returns the same formatted response as the console UI.
+     *
+     * @param command the command entered by the user
+     * @return Fox's formatted response, or an empty string for blank input
+     */
+    public String getResponse(String command) {
+        if (command == null || command.trim().isEmpty()) {
+            return "";
+        }
+        if (!tasksLoaded) {
+            loadTasks();
+            tasksLoaded = true;
+        }
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        FoxUi responseUi = new FoxUi(new PrintStream(output));
+        String trimmedCommand = command.trim();
+        try {
+            if (trimmedCommand.equalsIgnoreCase("bye")) {
+                saveTasks();
+                responseUi.showError("Bye for now! Fox is closing.");
+            } else {
+                execute(trimmedCommand, responseUi);
+            }
+        } catch (FoxException exception) {
+            responseUi.showError(exception.getMessage());
+        }
+        return output.toString();
     }
 
     /** Extracts and validates the one-based task number required by a task action. */
