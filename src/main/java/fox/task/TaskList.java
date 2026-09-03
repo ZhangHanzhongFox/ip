@@ -30,12 +30,12 @@ public class TaskList implements Iterable<Task> {
     /**
      * Creates a task list containing the supplied tasks.
      *
-     * @param initialTasks the tasks to place in their existing order
      * @param capacity the maximum number of tasks; must not be negative
+     * @param initialTasks the zero or more tasks to place in their existing order
      * @throws FoxException if the supplied tasks exceed {@code capacity}
      * @throws NullPointerException if {@code initialTasks} is {@code null}
      */
-    public TaskList(Task[] initialTasks, int capacity) throws FoxException {
+    public TaskList(int capacity, Task... initialTasks) throws FoxException {
         this(capacity);
         if (initialTasks.length > capacity) {
             throw new FoxException("The data file contains more than " + capacity + " tasks.");

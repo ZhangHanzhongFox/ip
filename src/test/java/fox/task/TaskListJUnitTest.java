@@ -13,7 +13,7 @@ class TaskListJUnitTest {
     void supportsOneBasedAccessAndMutations() throws FoxException {
         Task first = new Todo("first");
         Task second = new Todo("second");
-        TaskList list = new TaskList(new Task[] {first, second}, 2);
+        TaskList list = new TaskList(2, first, second);
 
         assertEquals(first, list.get(1));
         assertEquals(second, list.get(2));
@@ -21,6 +21,16 @@ class TaskListJUnitTest {
         assertEquals(first, list.delete(1));
         assertEquals(1, list.size());
         assertEquals(second, list.get(1));
+    }
+
+    @Test
+    void acceptsZeroOneOrMultipleInitialTasks() throws FoxException {
+        Task first = new Todo("first");
+        Task second = new Todo("second");
+
+        assertEquals(0, new TaskList(3).size());
+        assertEquals(1, new TaskList(3, first).size());
+        assertEquals(2, new TaskList(3, first, second).size());
     }
 
     @Test
@@ -38,6 +48,6 @@ class TaskListJUnitTest {
     void rejectsNegativeCapacityAndOversizedInitialData() {
         assertThrows(IllegalArgumentException.class, () -> new TaskList(-1));
         assertThrows(FoxException.class, () ->
-                new TaskList(new Task[] {new Todo("one")}, 0));
+                new TaskList(0, new Todo("one")));
     }
 }

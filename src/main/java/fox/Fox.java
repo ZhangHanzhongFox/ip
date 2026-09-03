@@ -74,7 +74,7 @@ public class Fox {
     /** Loads persisted tasks, retaining an empty in-memory list if storage is unavailable. */
     private void loadTasks() {
         try {
-            taskList = new TaskList(storage.load(), MAX_TASKS);
+            taskList = new TaskList(MAX_TASKS, storage.load());
         } catch (Storage.StorageException | FoxException exception) {
             System.out.println("☹ OOPS!!! " + exception.getMessage());
             storageUsable = false;
