@@ -1,3 +1,5 @@
+package fox;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -52,7 +54,7 @@ public class FoxFindTest {
         Path directory = Files.createTempDirectory("fox-find");
         String classPath = Path.of(System.getProperty("java.class.path")).toAbsolutePath().toString();
         Process process = new ProcessBuilder(System.getProperty("java.home") + "/bin/java",
-                "-cp", classPath, "Fox")
+                "-cp", classPath, "fox.Fox")
                 .directory(directory.toFile())
                 .redirectErrorStream(true)
                 .start();

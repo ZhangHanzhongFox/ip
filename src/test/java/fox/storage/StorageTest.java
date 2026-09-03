@@ -37,8 +37,10 @@ public class StorageTest {
         Path directory = Files.createTempDirectory("fox-storage-round-trip");
         Path file = directory.resolve("nested").resolve("fox.txt");
         Storage storage = new Storage(file);
-        Task[] tasks = {new Todo("buy | milk"), new Deadline("submit report", "Friday"),
-                new Event("team meeting", "10am", "11am")};
+        Task[] tasks = {
+            new Todo("buy | milk"),
+            new Deadline("submit report", "Friday"),
+            new Event("team meeting", "10am", "11am")};
         tasks[0].markAsDone();
         storage.save(tasks, tasks.length);
         Task[] loaded = storage.load();
