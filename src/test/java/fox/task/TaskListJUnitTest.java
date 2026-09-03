@@ -37,7 +37,7 @@ class TaskListJUnitTest {
     @Test
     void rejectsNegativeCapacityAndOversizedInitialData() {
         assertThrows(IllegalArgumentException.class, () -> new TaskList(-1));
-        assertThrows(FoxException.class,
-                () -> new TaskList(new Task[] {new Todo("one")}, 0));
+        assertThrows(FoxException.class, () ->
+                new TaskList(new Task[] {new Todo("one")}, 0));
     }
 }

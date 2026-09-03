@@ -6,8 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
-import fox.storage.Storage;
-
 /** Integration test for saving after a command and restoring after restart. */
 public class FoxPersistenceTest {
     /** Starts Fox twice in an isolated directory and checks the saved task reappears. */
