@@ -22,6 +22,8 @@ public class Main extends Application {
             fxmlLoader.<MainWindow>getController().setFox(fox);
             stage.setScene(new Scene(mainWindow));
             stage.setTitle("Fox");
+            stage.setMinHeight(220.0);
+            stage.setMinWidth(417.0);
             stage.show();
         } catch (IOException exception) {
             throw new IllegalStateException("Could not load Fox's main window.", exception);

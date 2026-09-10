@@ -46,6 +46,7 @@ public class DialogBox extends HBox {
         Collections.reverse(children);
         dialogBox.getChildren().setAll(children);
         dialogBox.setAlignment(Pos.TOP_LEFT);
+        dialogBox.dialog.getStyleClass().add("reply-label");
         return dialogBox;
     }
 }
