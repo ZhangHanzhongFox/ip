@@ -52,10 +52,13 @@ public class TaskList implements Iterable<Task> {
      * @throws FoxException if the list has reached its capacity
      */
     public void add(Task task) throws FoxException {
+        assert tasks.size() <= capacity : "Task count must not exceed capacity";
+
         if (tasks.size() == capacity) {
             throw new FoxException("☹ OOPS!!! Your task list is full.");
         }
         tasks.add(task);
+        assert tasks.size() <= capacity : "Task count must not exceed capacity";
     }
 
     /**
@@ -109,7 +112,9 @@ public class TaskList implements Iterable<Task> {
         if (taskNumber < 1 || taskNumber > tasks.size()) {
             throw new FoxException("☹ OOPS!!! I couldn't find that task.");
         }
-        return tasks.remove(taskNumber - 1);
+        Task deletedTask = tasks.remove(taskNumber - 1);
+        assert tasks.size() <= capacity : "Task count must not exceed capacity";
+        return deletedTask;
     }
 
     /**
