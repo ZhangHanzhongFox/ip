@@ -41,6 +41,8 @@ public class MainWindow extends AnchorPane {
     /** Displays the user's command and Fox's response, then clears the input. */
     @FXML
     private void handleUserInput() {
+        assert fox != null : "Fox must be set before handling user input";
+
         String input = userInput.getText().trim();
         if (input.isEmpty()) {
             return;
