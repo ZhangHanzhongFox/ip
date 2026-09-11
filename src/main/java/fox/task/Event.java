@@ -1,5 +1,7 @@
 package fox.task;
 
+import java.util.Objects;
+
 /**
  * Represents a task that takes place at an event.
  */
@@ -36,6 +38,13 @@ public class Event extends Task {
      */
     public String getTo() {
         return to;
+    }
+
+    @Override
+    public boolean hasSameDetails(Task other) {
+        return super.hasSameDetails(other)
+                && Objects.equals(from, ((Event) other).from)
+                && Objects.equals(to, ((Event) other).to);
     }
 
     /**

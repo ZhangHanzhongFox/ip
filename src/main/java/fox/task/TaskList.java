@@ -3,6 +3,7 @@ package fox.task;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import fox.exception.FoxException;
 
@@ -46,19 +47,29 @@ public class TaskList implements Iterable<Task> {
     }
 
     /**
-     * Adds a task, rejecting additions beyond the configured capacity.
+     * Adds a unique task, rejecting duplicates and additions beyond the configured capacity.
      *
      * @param task the task to append; may be {@code null}, although callers normally provide a task
-     * @throws FoxException if the list has reached its capacity
+     * @throws FoxException if the task duplicates an existing task or the list has reached its capacity
      */
     public void add(Task task) throws FoxException {
         assert tasks.size() <= capacity : "Task count must not exceed capacity";
 
+        if (containsTaskWithSameDetails(task)) {
+            throw new FoxException("☹ OOPS!!! This task is already in your task list.");
+        }
         if (tasks.size() == capacity) {
             throw new FoxException("☹ OOPS!!! Your task list is full.");
         }
         tasks.add(task);
         assert tasks.size() <= capacity : "Task count must not exceed capacity";
+    }
+
+    /** Returns whether the list contains a non-null task with the same intrinsic details. */
+    private boolean containsTaskWithSameDetails(Task task) {
+        return task != null && tasks.stream()
+                .filter(Objects::nonNull)
+                .anyMatch(task::hasSameDetails);
     }
 
     /**

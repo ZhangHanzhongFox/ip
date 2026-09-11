@@ -19,6 +19,13 @@ Example: `deadline submit report /by 2026-12-02`
 The deadline is displayed as `(by: Dec 02 2026)` and is restored after Fox is
 restarted.
 
+## Preventing duplicate tasks
+
+Fox rejects a new task when an existing task has the same type and details.
+For example, entering `todo read book` twice adds only the first task. A task
+remains a duplicate after it is marked as done because its completion status
+does not change its identity.
+
 ## Feature ABC
 
 // Feature details

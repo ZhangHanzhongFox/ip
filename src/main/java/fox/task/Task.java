@@ -1,5 +1,7 @@
 package fox.task;
 
+import java.util.Objects;
+
 /**
  * Represents a task in Fox's task list.
  */
@@ -52,6 +54,19 @@ public class Task {
      */
     public boolean isDone() {
         return isDone;
+    }
+
+    /**
+     * Returns whether another task has the same type and intrinsic details.
+     * Completion status is excluded because it can change during a task's lifetime.
+     *
+     * @param other the task to compare with
+     * @return {@code true} if both tasks have the same type and description
+     */
+    public boolean hasSameDetails(Task other) {
+        return other != null
+                && getClass() == other.getClass()
+                && Objects.equals(description, other.description);
     }
 
     /**
