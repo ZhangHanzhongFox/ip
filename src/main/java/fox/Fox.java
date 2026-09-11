@@ -83,6 +83,9 @@ public class Fox {
 
     /** Dispatches one non-empty command to the appropriate domain and UI operations. */
     private void execute(String command, FoxUi responseUi) throws FoxException {
+        assert command != null && !command.isBlank() : "Command must contain non-whitespace characters";
+        assert responseUi != null : "Response UI must be initialized";
+
         String commandName = command.split("\\s+", 2)[0];
         if (command.equalsIgnoreCase("list")) {
             responseUi.showTasks(taskList);
