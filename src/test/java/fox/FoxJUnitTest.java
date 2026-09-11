@@ -1,5 +1,6 @@
 package fox;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -47,5 +48,19 @@ class FoxJUnitTest {
 
         Fox reloadedFox = new Fox(new Storage(dataFile));
         assertTrue(reloadedFox.getResponse("list").contains("remember this"));
+    }
+
+    @Test
+    void duplicateCommandIsRejectedWithoutAddingAnotherTask() {
+        Fox fox = new Fox(new Storage(temporaryDirectory.resolve("duplicates.txt")));
+
+        fox.getResponse("todo read book");
+        fox.getResponse("mark 1");
+        String duplicateResponse = fox.getResponse("todo read book");
+        String listResponse = fox.getResponse("list");
+
+        assertTrue(duplicateResponse.contains("already in your task list"));
+        assertTrue(listResponse.contains("1.[T][X] read book"));
+        assertFalse(listResponse.contains("2.[T]"));
     }
 }

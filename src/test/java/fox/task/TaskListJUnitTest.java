@@ -3,6 +3,8 @@ package fox.task;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.Test;
 
 import fox.exception.FoxException;
@@ -49,5 +51,28 @@ class TaskListJUnitTest {
         assertThrows(IllegalArgumentException.class, () -> new TaskList(-1));
         assertThrows(FoxException.class, () ->
                 new TaskList(0, new Todo("one")));
+    }
+
+    @Test
+    void rejectsDuplicateTasksButAllowsDifferentDetails() throws FoxException {
+        Todo completedTodo = new Todo("read book");
+        completedTodo.markAsDone();
+        TaskList list = new TaskList(8, completedTodo);
+
+        FoxException duplicateTodo = assertThrows(FoxException.class, () ->
+                list.add(new Todo("read book")));
+        assertEquals("☹ OOPS!!! This task is already in your task list.", duplicateTodo.getMessage());
+
+        list.add(new Deadline("read book", LocalDate.of(2026, 12, 1)));
+        list.add(new Deadline("submit report", LocalDate.of(2026, 12, 1)));
+        list.add(new Deadline("submit report", LocalDate.of(2026, 12, 2)));
+        list.add(new Event("meeting", "10am", "11am"));
+        list.add(new Event("meeting", "10am", "12pm"));
+
+        assertThrows(FoxException.class, () ->
+                list.add(new Deadline("submit report", LocalDate.of(2026, 12, 1))));
+        assertThrows(FoxException.class, () ->
+                list.add(new Event("meeting", "10am", "11am")));
+        assertEquals(6, list.size());
     }
 }

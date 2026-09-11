@@ -1,6 +1,7 @@
 package fox.task;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 /**
  * Represents a task with a deadline.
@@ -50,6 +51,12 @@ public class Deadline extends Task {
      */
     public String getBy() {
         return byDate == null ? legacyBy : FoxDate.INPUT_FORMAT.format(byDate);
+    }
+
+    @Override
+    public boolean hasSameDetails(Task other) {
+        return super.hasSameDetails(other)
+                && Objects.equals(getBy(), ((Deadline) other).getBy());
     }
 
     /**
