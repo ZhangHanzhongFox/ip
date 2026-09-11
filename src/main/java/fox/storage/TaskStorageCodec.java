@@ -1,7 +1,9 @@
 package fox.storage;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.stream.Collectors;
 
 import fox.task.Deadline;
 import fox.task.Event;
@@ -41,15 +43,10 @@ public class TaskStorageCodec {
         } else {
             throw new Storage.StorageException("Cannot save an unsupported task type.");
         }
-        StringBuilder result = new StringBuilder(type).append(SEPARATOR)
-                .append(task.isDone()).append(SEPARATOR);
-        for (int i = 0; i < fields.length; i++) {
-            if (i > 0) {
-                result.append(SEPARATOR);
-            }
-            result.append(encodeField(fields[i]));
-        }
-        return result.toString();
+        String encodedFields = Arrays.stream(fields)
+                .map(this::encodeField)
+                .collect(Collectors.joining(SEPARATOR));
+        return String.join(SEPARATOR, type, Boolean.toString(task.isDone()), encodedFields);
     }
 
     private String encodeField(String value) {
