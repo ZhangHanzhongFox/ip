@@ -87,6 +87,12 @@ public class Storage {
      * @throws StorageException if the data cannot be written
      */
     public void save(Task[] tasks, int taskCount) throws StorageException {
+        if (tasks == null) {
+            throw new StorageException("Could not write tasks because the task collection is missing.");
+        }
+        if (taskCount < 0 || taskCount > tasks.length) {
+            throw new StorageException("Could not write tasks because the task count is invalid.");
+        }
         try {
             Path parent = dataFile.getParent();
             if (parent != null) {

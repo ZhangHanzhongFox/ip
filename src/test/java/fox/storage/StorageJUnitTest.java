@@ -92,4 +92,13 @@ class StorageJUnitTest {
 
         assertTrue(exception.getMessage().contains("deadline date is not valid"));
     }
+
+    @Test
+    void rejectsInvalidSaveArguments() {
+        Storage storage = new Storage(temporaryDirectory.resolve("invalid-save.txt"));
+
+        assertThrows(Storage.StorageException.class, () -> storage.save(null, 0));
+        assertThrows(Storage.StorageException.class, () -> storage.save(new Task[0], -1));
+        assertThrows(Storage.StorageException.class, () -> storage.save(new Task[0], 1));
+    }
 }
