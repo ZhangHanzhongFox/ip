@@ -44,7 +44,11 @@ public class Fox {
      * @param scanner the input source for Fox commands; must not be {@code null}
      */
     public void run(Scanner scanner) {
-        loadTasks();
+        try {
+            loadTasks();
+        } catch (FoxException exception) {
+            ui.showError(exception.getMessage());
+        }
         tasksLoaded = true;
         System.out.print("  /\\_/\\\n ( •ᴗ• )   Hi! I'm Fox, your little companion. 🦊\n"
                 + "  > ^ <    I may be small, but I've got plenty of tricks up my sleeve.\n\n"
@@ -56,8 +60,8 @@ public class Fox {
                 continue;
             }
             try {
-                if (command.equalsIgnoreCase("bye")) {
-                    saveTasks();
+                if (getCommandName(command).equalsIgnoreCase("bye")) {
+                    rejectArguments(command, "bye");
                     System.out.println(FoxUi.SEPARATOR);
                     System.out.print("  /\\_/\\\n ( -.- )   Bye for now! 🌙\n"
                             + "  > ^ <    I'm off to the fox den. Wake me up anytime you're in need!\n");
@@ -72,12 +76,14 @@ public class Fox {
     }
 
     /** Loads persisted tasks, retaining an empty in-memory list if storage is unavailable. */
-    private void loadTasks() {
+    private void loadTasks() throws FoxException {
         try {
             taskList = new TaskList(MAX_TASKS, storage.load());
+            storageUsable = true;
         } catch (Storage.StorageException | FoxException exception) {
-            System.out.println("☹ OOPS!!! " + exception.getMessage());
             storageUsable = false;
+            throw new FoxException("☹ OOPS!!! Fox could not load your tasks safely. "
+                    + exception.getMessage());
         }
     }
 
@@ -86,20 +92,27 @@ public class Fox {
         assert command != null && !command.isBlank() : "Command must contain non-whitespace characters";
         assert responseUi != null : "Response UI must be initialized";
 
-        String commandName = command.split("\\s+", 2)[0];
-        if (command.equalsIgnoreCase("list")) {
+        String commandName = getCommandName(command);
+        if (commandName.equalsIgnoreCase("list")) {
+            rejectArguments(command, "list");
             responseUi.showTasks(taskList);
         } else if (commandName.equalsIgnoreCase("mark")) {
-            responseUi.showMarked(taskList.markDone(parseTaskNumber(command, "mark")), true);
+            ensureStorageUsable();
+            Task markedTask = taskList.markDone(parseTaskNumber(command, "mark"));
             saveTasks();
+            responseUi.showMarked(markedTask, true);
         } else if (commandName.equalsIgnoreCase("unmark")) {
-            responseUi.showMarked(taskList.markNotDone(parseTaskNumber(command, "unmark")), false);
+            ensureStorageUsable();
+            Task unmarkedTask = taskList.markNotDone(parseTaskNumber(command, "unmark"));
             saveTasks();
+            responseUi.showMarked(unmarkedTask, false);
         } else if (commandName.equalsIgnoreCase("delete")) {
+            ensureStorageUsable();
             Task deleted = taskList.delete(parseTaskNumber(command, "delete"));
-            responseUi.showDeleted(deleted, taskList.size());
             saveTasks();
+            responseUi.showDeleted(deleted, taskList.size());
         } else {
+            ensureStorageUsable();
             Task task = taskParser.parse(commandName, command);
             taskList.add(task);
             saveTasks();
@@ -117,16 +130,16 @@ public class Fox {
         if (command == null || command.trim().isEmpty()) {
             return "";
         }
-        if (!tasksLoaded) {
-            loadTasks();
-            tasksLoaded = true;
-        }
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         FoxUi responseUi = new FoxUi(new PrintStream(output));
         String trimmedCommand = command.trim();
         try {
-            if (trimmedCommand.equalsIgnoreCase("bye")) {
-                saveTasks();
+            if (!tasksLoaded) {
+                loadTasks();
+                tasksLoaded = true;
+            }
+            if (getCommandName(trimmedCommand).equalsIgnoreCase("bye")) {
+                rejectArguments(trimmedCommand, "bye");
                 responseUi.showError("Bye for now! Fox is closing.");
             } else {
                 execute(trimmedCommand, responseUi);
@@ -141,27 +154,49 @@ public class Fox {
     private int parseTaskNumber(String command, String action) throws FoxException {
         String[] parts = command.split("\\s+");
         if (parts.length != 2) {
-            throw new FoxException("☹ OOPS!!! Please provide the task number to " + action + ".");
+            throw new FoxException("☹ OOPS!!! Use `" + action
+                    + " <task number>` with exactly one task number.");
         }
         try {
-            return Integer.parseInt(parts[1]);
+            int taskNumber = Integer.parseInt(parts[1]);
+            if (taskNumber < 1) {
+                throw new FoxException("☹ OOPS!!! The task number must be a positive whole number.");
+            }
+            return taskNumber;
         } catch (NumberFormatException exception) {
-            String message = action.equals("unmark")
-                    ? " OOPS!!! The task number must be a whole number."
-                    : "☹ OOPS!!! The task number must be a whole number.";
-            throw new FoxException(message);
+            throw new FoxException("☹ OOPS!!! The task number must be a positive whole number.");
         }
     }
 
     /** Persists the current task list when storage is still usable. */
-    private void saveTasks() {
-        if (!storageUsable) {
-            return;
-        }
+    private void saveTasks() throws FoxException {
+        ensureStorageUsable();
         try {
             storage.save(taskList.toArray(), taskList.size());
         } catch (Storage.StorageException exception) {
-            System.out.println("☹ OOPS!!! " + exception.getMessage());
+            storageUsable = false;
+            throw new FoxException("☹ OOPS!!! Fox could not save your tasks. "
+                    + "Your latest changes remain available for this session only. "
+                    + exception.getMessage());
+        }
+    }
+
+    /** Returns the first word of a non-empty command. */
+    private String getCommandName(String command) {
+        return command.split("\\s+", 2)[0];
+    }
+
+    /** Rejects arguments supplied to a command that accepts none. */
+    private void rejectArguments(String command, String commandName) throws FoxException {
+        if (command.split("\\s+", 2).length > 1) {
+            throw new FoxException("☹ OOPS!!! The " + commandName + " command does not accept arguments.");
+        }
+    }
+
+    /** Prevents changes when Fox cannot load or save the task file safely. */
+    private void ensureStorageUsable() throws FoxException {
+        if (!storageUsable) {
+            throw new FoxException("☹ OOPS!!! Fox cannot change tasks because its data file is unavailable.");
         }
     }
 

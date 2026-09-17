@@ -42,7 +42,7 @@ public class TaskList implements Iterable<Task> {
             throw new FoxException("The data file contains more than " + capacity + " tasks.");
         }
         for (Task task : initialTasks) {
-            tasks.add(task);
+            add(task);
         }
     }
 
@@ -55,6 +55,9 @@ public class TaskList implements Iterable<Task> {
     public void add(Task task) throws FoxException {
         assert tasks.size() <= capacity : "Task count must not exceed capacity";
 
+        if (task == null) {
+            throw new FoxException("☹ OOPS!!! A task cannot be missing.");
+        }
         if (containsTaskWithSameDetails(task)) {
             throw new FoxException("☹ OOPS!!! This task is already in your task list.");
         }
@@ -67,7 +70,7 @@ public class TaskList implements Iterable<Task> {
 
     /** Returns whether the list contains a non-null task with the same intrinsic details. */
     private boolean containsTaskWithSameDetails(Task task) {
-        return task != null && tasks.stream()
+        return tasks.stream()
                 .filter(Objects::nonNull)
                 .anyMatch(task::hasSameDetails);
     }

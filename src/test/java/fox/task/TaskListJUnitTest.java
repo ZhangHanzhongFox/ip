@@ -51,6 +51,9 @@ class TaskListJUnitTest {
         assertThrows(IllegalArgumentException.class, () -> new TaskList(-1));
         assertThrows(FoxException.class, () ->
                 new TaskList(0, new Todo("one")));
+        assertThrows(FoxException.class, () -> new TaskList(1, (Task) null));
+        assertThrows(FoxException.class, () -> new TaskList(2,
+                new Todo("duplicate"), new Todo("duplicate")));
     }
 
     @Test
