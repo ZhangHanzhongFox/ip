@@ -96,6 +96,9 @@ public class Fox {
         if (commandName.equalsIgnoreCase("list")) {
             rejectArguments(command, "list");
             responseUi.showTasks(taskList);
+        } else if (commandName.equalsIgnoreCase("find")) {
+            String[] keywords = parseFindKeywords(command);
+            responseUi.showFoundTasks(taskList, taskList.findMatchingTaskNumbers(keywords));
         } else if (commandName.equalsIgnoreCase("mark")) {
             ensureStorageUsable();
             Task markedTask = taskList.markDone(parseTaskNumber(command, "mark"));
@@ -166,6 +169,15 @@ public class Fox {
         } catch (NumberFormatException exception) {
             throw new FoxException("☹ OOPS!!! The task number must be a positive whole number.");
         }
+    }
+
+    /** Extracts the one or more keywords required by a find command. */
+    private String[] parseFindKeywords(String command) throws FoxException {
+        String[] commandParts = command.split("\\s+", 2);
+        if (commandParts.length < 2 || commandParts[1].isBlank()) {
+            throw new FoxException("☹ OOPS!!! Please provide at least one keyword to find.");
+        }
+        return commandParts[1].trim().split("\\s+");
     }
 
     /** Persists the current task list when storage is still usable. */

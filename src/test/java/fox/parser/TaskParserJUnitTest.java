@@ -37,8 +37,8 @@ class TaskParserJUnitTest {
                 parser.parse("event", "event meeting /from 10am /to"));
         FoxException exception = assertThrows(FoxException.class, () ->
                 parser.parse("remove", "remove book"));
-        assertEquals("☹ OOPS!!! I don't recognize 'remove'. Try list, todo, deadline, event, "
-                + "mark, unmark, delete, or bye.", exception.getMessage());
+        assertEquals("☹ OOPS!!! I don't recognize 'remove'. Try list, find, todo, deadline, "
+                + "event, mark, unmark, delete, or bye.", exception.getMessage());
     }
 
     @Test

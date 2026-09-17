@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -77,5 +78,18 @@ class TaskListJUnitTest {
         assertThrows(FoxException.class, () ->
                 list.add(new Event("meeting", "10am", "11am")));
         assertEquals(6, list.size());
+    }
+
+    @Test
+    void findsWholeWordsCaseInsensitivelyAndKeepsOriginalNumbers() throws FoxException {
+        TaskList list = new TaskList(4,
+                new Todo("buy milk"),
+                new Todo("buying milkshake"),
+                new Todo("READ project notes"),
+                new Todo("plan holiday"));
+
+        assertEquals(List.of(1), list.findMatchingTaskNumbers("BUY"));
+        assertEquals(List.of(1, 3), list.findMatchingTaskNumbers("milk", "project"));
+        assertEquals(List.of(), list.findMatchingTaskNumbers("absent"));
     }
 }

@@ -101,6 +101,19 @@ class FoxJUnitTest {
         assertTrue(blockedChangeResponse.contains("data file is unavailable"));
     }
 
+    @Test
+    void findsTasksWithoutChangingTheirOriginalNumbers() {
+        Fox fox = new Fox(new Storage(temporaryDirectory.resolve("find.txt")));
+        fox.getResponse("todo unrelated task");
+        fox.getResponse("todo read project notes");
+
+        String response = fox.getResponse("find PROJECT");
+
+        assertTrue(response.contains("2.[T][ ] read project notes"));
+        assertFalse(response.contains("1.[T][ ] unrelated task"));
+        assertTrue(fox.getResponse("find").contains("at least one keyword"));
+    }
+
     /** Storage double that permits loading but simulates an environmental write failure. */
     private static final class SaveFailingStorage extends Storage {
         SaveFailingStorage(Path dataFile) {
