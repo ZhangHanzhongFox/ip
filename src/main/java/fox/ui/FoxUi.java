@@ -83,12 +83,12 @@ public class FoxUi {
      * Prints a task mutation response.
      *
      * @param task the task whose completion status changed
-     * @param done whether the task was marked done
+     * @param isDone whether the task was marked done
      */
-    public void showMarked(Task task, boolean done) {
+    public void showMarked(Task task, boolean isDone) {
         printLine(SEPARATOR);
         printHappyExpression();
-        printLine(done ? "     Nice! I've marked this task as done:"
+        printLine(isDone ? "     Nice! I've marked this task as done:"
                 : "     OK, I've marked this task as not done yet:");
         printLine("       " + task);
         printLine(SEPARATOR);

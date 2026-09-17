@@ -127,7 +127,7 @@ public class Storage {
             if (parts.length < 3 || !parts[1].equals("true") && !parts[1].equals("false")) {
                 throw new IllegalArgumentException("invalid status or field count");
             }
-            boolean done = Boolean.parseBoolean(parts[1]);
+            boolean isDone = Boolean.parseBoolean(parts[1]);
             Task task;
             switch (parts[0]) {
             case "T":
@@ -158,7 +158,7 @@ public class Storage {
             default:
                 throw new IllegalArgumentException("unknown task type");
             }
-            if (done) {
+            if (isDone) {
                 task.markAsDone();
             }
             return task;

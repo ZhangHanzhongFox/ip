@@ -18,8 +18,8 @@ public class Fox {
     private final TaskParser taskParser;
     private final FoxUi ui;
     private TaskList taskList;
-    private boolean storageUsable = true;
-    private boolean tasksLoaded;
+    private boolean isStorageUsable = true;
+    private boolean isTaskListLoaded;
 
     /** Creates a Fox application using the default task storage. */
     public Fox() {
@@ -49,7 +49,7 @@ public class Fox {
         } catch (FoxException exception) {
             ui.showError(exception.getMessage());
         }
-        tasksLoaded = true;
+        isTaskListLoaded = true;
         System.out.print("  /\\_/\\\n ( •ᴗ• )   Hi! I'm Fox, your little companion. 🦊\n"
                 + "  > ^ <    I may be small, but I've got plenty of tricks up my sleeve.\n\n"
                 + "           What can I do for you?\n");
@@ -79,9 +79,9 @@ public class Fox {
     private void loadTasks() throws FoxException {
         try {
             taskList = new TaskList(MAX_TASKS, storage.load());
-            storageUsable = true;
+            isStorageUsable = true;
         } catch (Storage.StorageException | FoxException exception) {
-            storageUsable = false;
+            isStorageUsable = false;
             throw new FoxException("☹ OOPS!!! Fox could not load your tasks safely. "
                     + exception.getMessage());
         }
@@ -137,9 +137,9 @@ public class Fox {
         FoxUi responseUi = new FoxUi(new PrintStream(output));
         String trimmedCommand = command.trim();
         try {
-            if (!tasksLoaded) {
+            if (!isTaskListLoaded) {
                 loadTasks();
-                tasksLoaded = true;
+                isTaskListLoaded = true;
             }
             if (getCommandName(trimmedCommand).equalsIgnoreCase("bye")) {
                 rejectArguments(trimmedCommand, "bye");
@@ -186,7 +186,7 @@ public class Fox {
         try {
             storage.save(taskList.toArray(), taskList.size());
         } catch (Storage.StorageException exception) {
-            storageUsable = false;
+            isStorageUsable = false;
             throw new FoxException("☹ OOPS!!! Fox could not save your tasks. "
                     + "Your latest changes remain available for this session only. "
                     + exception.getMessage());
@@ -207,7 +207,7 @@ public class Fox {
 
     /** Prevents changes when Fox cannot load or save the task file safely. */
     private void ensureStorageUsable() throws FoxException {
-        if (!storageUsable) {
+        if (!isStorageUsable) {
             throw new FoxException("☹ OOPS!!! Fox cannot change tasks because its data file is unavailable.");
         }
     }

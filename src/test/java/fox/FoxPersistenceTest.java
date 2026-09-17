@@ -46,8 +46,8 @@ public class FoxPersistenceTest {
                 .start();
         process.getOutputStream().write(input.getBytes(StandardCharsets.UTF_8));
         process.getOutputStream().close();
-        boolean finished = process.waitFor(10, TimeUnit.SECONDS);
-        assert finished;
+        boolean hasFinished = process.waitFor(10, TimeUnit.SECONDS);
+        assert hasFinished;
         assert process.exitValue() == 0;
         return new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
     }
