@@ -1,6 +1,7 @@
 package fox.ui;
 
 import java.io.PrintStream;
+import java.util.List;
 
 import fox.task.Task;
 import fox.task.TaskList;
@@ -35,6 +36,30 @@ public class FoxUi {
         int number = 1;
         for (Task task : taskList) {
             printLine("     " + number++ + "." + task);
+        }
+        printLine(SEPARATOR);
+    }
+
+    /**
+     * Prints tasks found by a keyword search while retaining their original task numbers.
+     *
+     * @param taskList the complete task list
+     * @param matchingTaskNumbers the one-based numbers of matching tasks
+     */
+    public void showFoundTasks(TaskList taskList, List<Integer> matchingTaskNumbers) {
+        printLine(SEPARATOR);
+        printHappyExpression();
+        if (matchingTaskNumbers.isEmpty()) {
+            printLine("     There are no matching tasks.");
+        } else {
+            printLine("     Here are the matching tasks in your list:");
+            int taskNumber = 1;
+            for (Task task : taskList) {
+                if (matchingTaskNumbers.contains(taskNumber)) {
+                    printLine("     " + taskNumber + "." + task);
+                }
+                taskNumber++;
+            }
         }
         printLine(SEPARATOR);
     }

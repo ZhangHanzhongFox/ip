@@ -45,7 +45,7 @@ public class TaskParser {
             return parseEvent(details);
         }
         throw new FoxException("☹ OOPS!!! I don't recognize '" + commandName
-                + "'. Try list, todo, deadline, event, mark, unmark, delete, or bye.");
+                + "'. Try list, find, todo, deadline, event, mark, unmark, delete, or bye.");
     }
 
     /** Creates a to-do task from its description. */

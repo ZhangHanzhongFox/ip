@@ -43,6 +43,7 @@ def foxTestClasses = [
         'fox.parser.TaskParserTest',
         'fox.storage.StorageTest',
         'fox.task.TaskListTest',
+        'fox.FoxFindTest',
         'fox.FoxPersistenceTest'
 ]
 

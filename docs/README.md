@@ -27,6 +27,14 @@ the start time; parameters such as `/from` and `/to` can each appear only once.
 
 Example: `event project meeting /from 2pm /to 3:30pm`
 
+## Finding tasks
+
+Use `find <keyword> [more keywords]` to find tasks whose descriptions contain
+at least one keyword as a complete word. Matching is case-insensitive, and the
+results keep their original task numbers.
+
+Example: `find report meeting`
+
 ## Preventing duplicate tasks
 
 Fox rejects a new task when an existing task has the same type and details.

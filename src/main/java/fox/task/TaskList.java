@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import fox.exception.FoxException;
 
@@ -129,6 +130,33 @@ public class TaskList implements Iterable<Task> {
         Task deletedTask = tasks.remove(taskNumber - 1);
         assert tasks.size() <= capacity : "Task count must not exceed capacity";
         return deletedTask;
+    }
+
+    /**
+     * Returns the original one-based numbers of tasks matching at least one keyword as a whole word.
+     * Matching is case-insensitive so that command capitalization does not affect results.
+     *
+     * @param keywords the one or more search keywords
+     * @return matching task numbers in their existing list order
+     */
+    public List<Integer> findMatchingTaskNumbers(String... keywords) {
+        List<Pattern> keywordPatterns = new ArrayList<>();
+        for (String keyword : keywords) {
+            String wholeWordPattern = "(?iu)(?<![\\p{L}\\p{N}_])" + Pattern.quote(keyword)
+                    + "(?![\\p{L}\\p{N}_])";
+            keywordPatterns.add(Pattern.compile(wholeWordPattern));
+        }
+
+        List<Integer> matchingTaskNumbers = new ArrayList<>();
+        for (int index = 0; index < tasks.size(); index++) {
+            String description = tasks.get(index).getDescription();
+            boolean hasMatchingKeyword = keywordPatterns.stream()
+                    .anyMatch(pattern -> pattern.matcher(description).find());
+            if (hasMatchingKeyword) {
+                matchingTaskNumbers.add(index + 1);
+            }
+        }
+        return matchingTaskNumbers;
     }
 
     /**
