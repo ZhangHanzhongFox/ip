@@ -12,6 +12,8 @@ import javafx.scene.layout.VBox;
 
 /** Controls Fox's main conversation window and delegates commands to Fox. */
 public class MainWindow extends AnchorPane {
+    private static final String ERROR_RESPONSE_MARKER = "OOPS!!!";
+
     @FXML
     private ScrollPane scrollPane;
     @FXML
@@ -48,9 +50,10 @@ public class MainWindow extends AnchorPane {
             return;
         }
         String response = fox.getResponse(input);
-        dialogContainer.getChildren().addAll(
-                DialogBox.getUserDialog(input, userImage),
-                DialogBox.getFoxDialog(response, foxImage));
+        DialogBox responseDialog = response.contains(ERROR_RESPONSE_MARKER)
+                ? DialogBox.getErrorDialog(response, foxImage)
+                : DialogBox.getFoxDialog(response, foxImage);
+        dialogContainer.getChildren().addAll(DialogBox.getUserDialog(input, userImage), responseDialog);
         userInput.clear();
         if (input.equalsIgnoreCase("bye")) {
             Platform.exit();

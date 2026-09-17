@@ -3,6 +3,7 @@ package fox.gui;
 import java.io.IOException;
 import java.util.Collections;
 
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -16,6 +17,8 @@ import javafx.scene.layout.HBox;
 
 /** Represents one conversation entry with its speaker image and text. */
 public class DialogBox extends HBox {
+    private static final double DIALOG_HORIZONTAL_MARGIN = 82.0;
+
     @FXML
     private Label dialog;
     @FXML
@@ -32,21 +35,38 @@ public class DialogBox extends HBox {
         }
         dialog.setText(text);
         displayPicture.setImage(image);
+        dialog.maxWidthProperty().bind(Bindings.max(0.0,
+                widthProperty().subtract(DIALOG_HORIZONTAL_MARGIN)));
     }
 
     /** Returns a right-aligned dialog entry for user input. */
     public static DialogBox getUserDialog(String text, Image image) {
-        return new DialogBox(text, image);
+        DialogBox dialogBox = new DialogBox(text, image);
+        dialogBox.dialog.getStyleClass().add("user-label");
+        return dialogBox;
     }
 
     /** Returns a left-aligned dialog entry for Fox's response. */
     public static DialogBox getFoxDialog(String text, Image image) {
         DialogBox dialogBox = new DialogBox(text, image);
-        ObservableList<Node> children = FXCollections.observableArrayList(dialogBox.getChildren());
-        Collections.reverse(children);
-        dialogBox.getChildren().setAll(children);
-        dialogBox.setAlignment(Pos.TOP_LEFT);
         dialogBox.dialog.getStyleClass().add("reply-label");
+        dialogBox.movePictureToLeft();
         return dialogBox;
+    }
+
+    /** Returns a visually distinct left-aligned dialog entry for an error response. */
+    public static DialogBox getErrorDialog(String text, Image image) {
+        DialogBox dialogBox = new DialogBox(text, image);
+        dialogBox.dialog.getStyleClass().add("error-label");
+        dialogBox.movePictureToLeft();
+        return dialogBox;
+    }
+
+    /** Moves Fox's picture before the response text. */
+    private void movePictureToLeft() {
+        ObservableList<Node> children = FXCollections.observableArrayList(getChildren());
+        Collections.reverse(children);
+        getChildren().setAll(children);
+        setAlignment(Pos.TOP_LEFT);
     }
 }
