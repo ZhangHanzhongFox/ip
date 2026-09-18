@@ -2,7 +2,7 @@
 
 // Update the title above to match the actual product name
 
-// Product screenshot goes here
+![Fox GUI](Ui.png)
 
 // Product intro goes here
 
@@ -50,3 +50,16 @@ does not change its identity.
 ## Feature XYZ
 
 // Feature details
+
+## Acknowledgements
+
+Parts of Fox's JavaFX GUI were adapted from the
+[SE-EDU JavaFX tutorial](https://se-education.org/guides/tutorials/javaFx.html):
+
+* [Part 1](https://se-education.org/guides/tutorials/javaFxPart1.html) guided the JavaFX launcher and
+  cross-platform Gradle dependency setup.
+* [Part 4](https://se-education.org/guides/tutorials/javaFxPart4.html) guided the FXML controller and dialog-box
+  interaction structure.
+* [Part 5](https://se-education.org/guides/tutorials/javaFxPart5.html) provided the basis for the initial CSS styling.
+
+These parts were subsequently customized for Fox.

@@ -72,3 +72,16 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
 Fox's Java classes are organized under the `fox` package. Application startup is
 `fox.Fox`; task models are in `fox.task`, command parsing is in `fox.parser`,
 file persistence is in `fox.storage`, and console presentation is in `fox.ui`.
+
+## Acknowledgements
+
+Parts of Fox's JavaFX GUI were adapted from the
+[SE-EDU JavaFX tutorial](https://se-education.org/guides/tutorials/javaFx.html):
+
+* [Part 1](https://se-education.org/guides/tutorials/javaFxPart1.html) guided the JavaFX launcher and
+  cross-platform Gradle dependency setup.
+* [Part 4](https://se-education.org/guides/tutorials/javaFxPart4.html) guided the FXML controller and dialog-box
+  interaction structure.
+* [Part 5](https://se-education.org/guides/tutorials/javaFxPart5.html) provided the basis for the initial CSS styling.
+
+These parts were subsequently customized for Fox.
